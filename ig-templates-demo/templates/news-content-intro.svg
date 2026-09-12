@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: news-content-intro | 1080×1350 | Full-bleed image + gradient scrim -->
+<!-- PLACEHOLDERS: IMAGE_URL, TAG, TITLE, SUBTITLE, AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <linearGradient id="news-intro-scrimGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="0"/>
+      <stop offset="32%"  stop-color="#000000" stop-opacity="0.20"/>
+      <stop offset="60%"  stop-color="#000000" stop-opacity="0.60"/>
+      <stop offset="78%"  stop-color="#000000" stop-opacity="0.88"/>
+      <stop offset="90%"  stop-color="#000000" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+    </linearGradient>
+    <clipPath id="news-intro-imgClip">
+      <rect x="0" y="0" width="1080" height="1350"/>
+    </clipPath>
+    <clipPath id="news-intro-avatarClip">
+      <circle cx="540" cy="188" r="48"/>
+    </clipPath>
+  </defs>
+
+  <g id="news-BG">
+    <rect x="0" y="0" width="1080" height="1350" fill="#000000"/>
+  </g>
+
+  <g id="news-ImageArea">
+    <image id="news-Image"
+           href="{{IMAGE_URL}}"
+           x="0" y="0" width="1080" height="1350"
+           clip-path="url(#news-intro-imgClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <rect id="news-ImageFade"
+          x="0" y="432" width="1080" height="918"
+          fill="url(#news-intro-scrimGrad)"/>
+  </g>
+
+  <g id="news-SourceTag">
+    <text id="news-Tag"
+          x="68" y="66"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="18" font-weight="700" fill="rgba(255,255,255,0.55)"
+          letter-spacing="3">{{TAG}}</text>
+  </g>
+
+  <g id="news-AvatarGroup">
+    <image id="news-Avatar"
+           href="{{AVATAR_URL}}"
+           x="492" y="140" width="96" height="96"
+           clip-path="url(#news-intro-avatarClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <circle cx="540" cy="188" r="48" fill="none" stroke="#ffffff" stroke-width="4"/>
+    <text id="news-Handle"
+          x="540" y="260"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="26" fill="#ffffff" font-weight="500"
+          text-anchor="middle">{{HANDLE}}</text>
+  </g>
+
+  <g id="news-TextArea">
+    <text id="news-SwipeHint"
+          x="68" y="1060"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="18" fill="rgba(255,255,255,0.35)" letter-spacing="1">Swipe untuk baca →</text>
+
+    <text id="news-Title"
+          x="68" y="1160"
+          font-family="Georgia,Times New Roman,serif"
+          font-size="60" font-weight="700" fill="#ffffff" letter-spacing="-0.5">{{TITLE}}</text>
+
+    <text id="news-Subtitle"
+          x="68" y="1240"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="29" fill="rgba(255,255,255,0.80)">{{SUBTITLE}}</text>
+  </g>
+</svg>

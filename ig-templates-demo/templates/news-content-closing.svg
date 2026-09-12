@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: news-content-closing | 1080×1350 | Full-bleed image + gradient scrim -->
+<!-- PLACEHOLDERS: IMAGE_URL, AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <linearGradient id="news-closing-scrimGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="0.30"/>
+      <stop offset="30%"  stop-color="#000000" stop-opacity="0.50"/>
+      <stop offset="55%"  stop-color="#000000" stop-opacity="0.72"/>
+      <stop offset="75%"  stop-color="#000000" stop-opacity="0.90"/>
+      <stop offset="88%"  stop-color="#000000" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+    </linearGradient>
+    <clipPath id="news-closing-imgClip">
+      <rect x="0" y="0" width="1080" height="1350"/>
+    </clipPath>
+    <clipPath id="news-closing-avatarClip">
+      <circle cx="540" cy="560" r="56"/>
+    </clipPath>
+  </defs>
+
+  <g id="news-closing-BG">
+    <rect x="0" y="0" width="1080" height="1350" fill="#000000"/>
+  </g>
+
+  <g id="news-closing-ImageArea">
+    <image id="news-closing-Image"
+           href="{{IMAGE_URL}}"
+           x="0" y="0" width="1080" height="1350"
+           clip-path="url(#news-closing-imgClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <rect id="news-closing-ImageFade"
+          x="0" y="0" width="1080" height="1350"
+          fill="url(#news-closing-scrimGrad)"/>
+  </g>
+
+  <g id="news-closing-AvatarGroup">
+    <image id="news-closing-Avatar"
+           href="{{AVATAR_URL}}"
+           x="484" y="504" width="112" height="112"
+           clip-path="url(#news-closing-avatarClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <circle cx="540" cy="560" r="56" fill="none" stroke="rgba(255,255,255,0.80)" stroke-width="3"/>
+    <text id="news-closing-Handle"
+          x="540" y="648"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="26" fill="rgba(255,255,255,0.85)" font-weight="500"
+          text-anchor="middle">{{HANDLE}}</text>
+  </g>
+
+  <g id="news-closing-TextArea">
+    <text id="news-closing-Label"
+          x="540" y="820"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="18" font-weight="700" fill="rgba(255,255,255,0.40)"
+          letter-spacing="4" text-anchor="middle">TECH &amp; AI</text>
+
+    <text id="news-closing-Headline1"
+          x="540" y="910"
+          font-family="Georgia,Times New Roman,serif"
+          font-size="72" font-weight="700" fill="#ffffff"
+          letter-spacing="-1" text-anchor="middle">moves fast.</text>
+
+    <rect id="news-closing-Sep"
+          x="490" y="932" width="100" height="3" fill="rgba(255,255,255,0.35)"/>
+
+    <text id="news-closing-Sub"
+          x="540" y="1002"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="28" fill="rgba(255,255,255,0.65)"
+          text-anchor="middle">Follow for daily updates.</text>
+
+    <text id="news-closing-FollowCTA"
+          x="540" y="1060"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="22" fill="rgba(255,255,255,0.38)"
+          text-anchor="middle" letter-spacing="1">↑ Like &amp; Save this post</text>
+  </g>
+</svg>

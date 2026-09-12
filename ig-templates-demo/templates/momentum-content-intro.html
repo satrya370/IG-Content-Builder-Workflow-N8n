@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1080px; height: 1350px;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0b0c;
+            color: #f5f5f3;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100%; height: 100%;
+            padding: 90px 100px;
+            display: flex; flex-direction: column;
+            position: relative;
+            background:
+                radial-gradient(circle at 15% 90%, rgba(57, 255, 106, 0.05) 0%, rgba(11,11,12,0) 45%),
+                linear-gradient(180deg, #0f0f10 0%, #0b0b0c 100%);
+        }
+
+        .center-stage {
+            flex: 1; display: flex; flex-direction: column;
+        }
+        .center-stage .spacer-top { flex: 0.8; }
+        .center-stage .spacer-bottom { flex: 1.2; }
+
+        .grain {
+            position: absolute; inset: 0; z-index: 0; opacity: 0.5; pointer-events: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+        }
+
+        .progress-ring {
+            position: absolute; top: 90px; right: 100px; z-index: 1;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: conic-gradient(#39ff6a 0deg 26deg, rgba(255,255,255,0.14) 26deg 360deg);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .progress-ring::after {
+            content: ''; width: 50px; height: 50px; border-radius: 50%; background: #0b0b0c;
+        }
+
+        .header { z-index: 1; text-align: left; }
+
+        .kicker {
+            font-size: 26px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+            color: #b7b7b2; margin-bottom: 22px;
+        }
+
+        .title {
+            font-family: 'Anton', sans-serif;
+            font-size: 96px; font-weight: 400; line-height: 1.05; text-transform: uppercase;
+            color: #f5f5f3; letter-spacing: 0.5px;
+            max-width: 780px; text-wrap: balance;
+        }
+
+        .accent-word {
+            font-family: 'Caveat', cursive;
+            font-size: 96px; font-weight: 700; line-height: 1;
+            color: #39ff6a; margin-top: 10px;
+            max-width: 780px;
+        }
+
+        .footer { z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+
+        .meta { display: flex; align-items: center; gap: 20px; }
+
+        .watermark { font-size: 22px; font-weight: 400; color: #9a9a94; }
+
+        .save-cta {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 22px; font-weight: 500; color: #b7b7b2; text-align: right;
+            line-height: 1.35;
+        }
+
+        .save-cta svg { flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="grain"></div>
+        <div class="progress-ring"></div>
+
+        <div class="center-stage">
+            <div class="spacer-top"></div>
+            <div class="header">
+                <div class="kicker">{{TAG}}</div>
+                <h1 class="title">{{TITLE}}</h1>
+                <div class="accent-word">{{ACCENT_WORD}}</div>
+            </div>
+            <div class="spacer-bottom"></div>
+        </div>
+
+        <div class="footer">
+            <div class="meta">
+                <div class="watermark">{{ACCOUNT_WATERMARK}}</div>
+            </div>
+            <div class="save-cta">
+                <svg width="22" height="26" viewBox="0 0 24 28" fill="none"><path d="M2 2h20v24l-10-7-10 7V2z" stroke="#39ff6a" stroke-width="2" stroke-linejoin="round"/></svg>
+                Save this<br>so you don't lose it
+            </div>
+        </div>
+    </div>
+</body>
+</html>

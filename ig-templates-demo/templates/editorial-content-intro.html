@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1080px; height: 1350px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8F9FA;
+            color: #1A1A1A;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100%; height: 100%;
+            padding: 90px 100px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: relative;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%);
+        }
+
+        .bg-decoration {
+            position: absolute; top: -150px; right: -150px; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%; z-index: 0;
+        }
+
+        .bg-decoration-2 {
+            position: absolute; bottom: -100px; left: -100px; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(33, 33, 33, 0.03) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%; z-index: 0;
+        }
+
+        .header { z-index: 1; }
+
+        .icon-badge {
+            width: 92px; height: 92px;
+            border-radius: 50%;
+            border: 1.6px solid #E6D6B3;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .subtitle {
+            font-size: 28px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase;
+            color: #C9A227; margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 84px; font-weight: 800; line-height: 1.08;
+            color: #111111; margin-bottom: 36px;
+            text-wrap: pretty;
+        }
+
+        .description {
+            font-size: 32px; font-weight: 400; line-height: 1.5;
+            color: #555555; max-width: 88%;
+            text-wrap: pretty;
+        }
+
+        .footer { z-index: 1; display: flex; flex-direction: column; gap: 40px; }
+
+        .tagline {
+            font-size: 26px; font-weight: 500; color: #333;
+            display: flex; align-items: center; gap: 15px;
+        }
+
+        .tagline .dot { color: #C9A227; font-size: 18px; }
+
+        .meta {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 2px solid #EEEEEE; padding-top: 30px;
+        }
+
+        .username { font-size: 28px; font-weight: 600; color: #111111; }
+
+        .pagination {
+            font-size: 26px; font-weight: 500; color: #888888;
+            background-color: #EEEEEE; padding: 8px 20px; border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="bg-decoration"></div>
+        <div class="bg-decoration-2"></div>
+
+        <div class="header">
+            <div class="icon-badge">
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+                    <path d="M13 8h11l6 6v18a2 2 0 01-2 2H13a2 2 0 01-2-2V10a2 2 0 012-2z" stroke="#C9A227" stroke-width="1.6"/>
+                    <path d="M24 8v6h6" stroke="#C9A227" stroke-width="1.6"/>
+                    <path d="M15 21h10M15 26h10M15 31h6" stroke="#C9A227" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="subtitle">{{TAG}}</div>
+            <h1 class="title">{{TITLE}}</h1>
+            <p class="description">{{SUBTITLE}}</p>
+        </div>
+
+        <div class="footer">
+            <div class="tagline">{{TAGLINE}}</div>
+            <div class="meta">
+                <div class="username">{{ACCOUNT_WATERMARK}}</div>
+                <div class="pagination">1/7</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

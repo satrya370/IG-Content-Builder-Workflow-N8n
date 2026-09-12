@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1350px; overflow: hidden; background: #f6f3ee; }
+
+    .slide {
+      position: relative;
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      padding: 90px;
+      background:
+        radial-gradient(circle at 20% 14%, rgba(184, 114, 10, 0.12), transparent 28%),
+        radial-gradient(circle at 82% 12%, rgba(15, 118, 110, 0.12), transparent 24%),
+        radial-gradient(circle at 75% 75%, rgba(184, 114, 10, 0.08), transparent 26%),
+        linear-gradient(180deg, #fbf9f5 0%, #f5f1ea 55%, #efe9df 100%);
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .grain,
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .grain {
+      opacity: 0.05;
+      background-image:
+        radial-gradient(rgba(28,29,38,0.5) 0.6px, transparent 0.6px),
+        radial-gradient(rgba(28,29,38,0.25) 0.6px, transparent 0.6px);
+      background-position: 0 0, 11px 11px;
+      background-size: 22px 22px;
+    }
+
+    .vignette {
+      box-shadow: inset 0 -180px 220px rgba(90, 65, 30, 0.06), inset 0 0 140px rgba(90,65,30,0.04);
+    }
+
+    .content {
+      position: relative;
+      margin-top: 270px;
+      z-index: 2;
+    }
+
+    .hook {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 160px;
+      font-weight: 900;
+      color: #1c1d26;
+      line-height: 0.88;
+      letter-spacing: -5px;
+      margin-bottom: 28px;
+    }
+
+    .accent-bar {
+      width: 120px;
+      height: 6px;
+      background: #0f766e;
+      border-radius: 999px;
+      margin-bottom: 52px;
+      box-shadow: 0 0 18px rgba(15, 118, 110, 0.2);
+    }
+
+    .sub1 {
+      font-size: 34px;
+      color: rgba(28,29,38,0.78);
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .sub2 {
+      font-size: 30px;
+      color: rgba(28,29,38,0.56);
+      font-weight: 400;
+    }
+
+    .account-block {
+      position: absolute;
+      bottom: 200px;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .account-label {
+      font-size: 28px;
+      font-weight: 600;
+      color: #1c1d26;
+    }
+
+    .follow-label {
+      font-size: 22px;
+      color: #8a5608;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    .bottom-line {
+      position: absolute;
+      bottom: 90px;
+      left: 90px;
+      right: 90px;
+      z-index: 2;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      padding-top: 28px;
+      text-align: center;
+    }
+
+    .bottom-tag {
+      font-size: 20px;
+      color: rgba(28,29,38,0.5);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="grain"></div>
+    <div class="vignette"></div>
+
+    <div class="content">
+      <div class="hook">FOLLOW.</div>
+      <div class="accent-bar"></div>
+      <div class="sub1">Like &amp; save if this was helpful.</div>
+      <div class="sub2">More data-backed content every week.</div>
+    </div>
+
+    <div class="account-block">
+      <span class="account-label">{{ACCOUNT_WATERMARK}}</span>
+      <span class="follow-label">{{FOLLOW_CTA}}</span>
+    </div>
+
+    <div class="bottom-line">
+      <span class="bottom-tag">Tech &amp; AI Every Week</span>
+    </div>
+  </div>
+</body>
+</html>

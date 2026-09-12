@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: news-content-isi | 1080×1350 | Full-bleed image + gradient scrim -->
+<!-- PLACEHOLDERS: IMAGE_URL, STEP_NUM, TOTAL, TAG, TITLE, EXPLANATION, AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <linearGradient id="news-isi-scrimGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000000" stop-opacity="0"/>
+      <stop offset="25%"  stop-color="#000000" stop-opacity="0.15"/>
+      <stop offset="52%"  stop-color="#000000" stop-opacity="0.55"/>
+      <stop offset="72%"  stop-color="#000000" stop-opacity="0.85"/>
+      <stop offset="88%"  stop-color="#000000" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="1"/>
+    </linearGradient>
+    <clipPath id="news-isi-imgClip">
+      <rect x="0" y="0" width="1080" height="1350"/>
+    </clipPath>
+    <clipPath id="news-isi-avatarClip">
+      <circle cx="540" cy="168" r="40"/>
+    </clipPath>
+  </defs>
+
+  <g id="news-isi-BG">
+    <rect x="0" y="0" width="1080" height="1350" fill="#000000"/>
+  </g>
+
+  <g id="news-isi-ImageArea">
+    <image id="news-isi-Image"
+           href="{{IMAGE_URL}}"
+           x="0" y="0" width="1080" height="1350"
+           clip-path="url(#news-isi-imgClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <rect id="news-isi-ImageFade"
+          x="0" y="338" width="1080" height="1012"
+          fill="url(#news-isi-scrimGrad)"/>
+  </g>
+
+  <g id="news-isi-StepIndicator">
+    <text id="news-isi-StepTag"
+          x="990" y="66"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="18" font-weight="700" fill="rgba(255,255,255,0.50)"
+          letter-spacing="3" text-anchor="end">Key Point</text>
+    <text id="news-isi-StepCount"
+          x="990" y="96"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="22" fill="rgba(255,255,255,0.30)"
+          text-anchor="end">{{STEP_NUM}} / {{TOTAL}}</text>
+  </g>
+
+  <g id="news-isi-AvatarGroup">
+    <image id="news-isi-Avatar"
+           href="{{AVATAR_URL}}"
+           x="500" y="128" width="80" height="80"
+           clip-path="url(#news-isi-avatarClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <circle cx="540" cy="168" r="40" fill="none" stroke="rgba(255,255,255,0.70)" stroke-width="3"/>
+    <text id="news-isi-Handle"
+          x="540" y="232"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="22" fill="rgba(255,255,255,0.80)" font-weight="500"
+          text-anchor="middle">{{HANDLE}}</text>
+  </g>
+
+  <g id="news-isi-TextArea">
+    <text id="news-isi-KeyLabel"
+          x="68" y="1010"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="18" font-weight="700" fill="rgba(255,255,255,0.45)"
+          letter-spacing="3">{{TAG}}</text>
+
+    <text id="news-isi-Title"
+          x="68" y="1108"
+          font-family="Georgia,Times New Roman,serif"
+          font-size="52" font-weight="700" fill="#ffffff" letter-spacing="-0.5">{{TITLE}}</text>
+
+    <rect id="news-isi-Separator"
+          x="68" y="1128" width="60" height="3" fill="rgba(255,255,255,0.40)"/>
+
+    <text id="news-isi-Explanation"
+          x="68" y="1194"
+          font-family="Arial,Helvetica,sans-serif"
+          font-size="27" fill="rgba(255,255,255,0.72)">{{EXPLANATION}}</text>
+  </g>
+</svg>

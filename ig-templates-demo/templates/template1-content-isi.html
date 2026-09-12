@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 1080px; height: 1350px; margin: 0; overflow: hidden; }
+    body { background: #ececec; font-family: Arial, Helvetica, sans-serif; }
+    .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; padding: 90px; background: #fff; color: #2b292d; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark { position: relative; width: 34px; height: 34px; border-radius: 50%; background: #ff4c55; }
+    .eye { position: absolute; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+    .eye-left { left: 8px; }
+    .eye-right { right: 8px; }
+    .smile { position: absolute; left: 8px; bottom: 8px; width: 18px; height: 9px; border-bottom: 4px solid #fff; border-radius: 0 0 18px 18px; }
+    .brand-name { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+    .step-count { color: #727174; font-size: 28px; }
+    .content { position: absolute; top: 31%; left: 90px; right: 90px; z-index: 2; }
+    .tag { margin: 0 0 30px; color: #ff4c55; font-size: 24px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; }
+    .title { max-width: 880px; font-family: Georgia, 'Times New Roman', serif; font-size: 62px; font-weight: 700; line-height: 1.13; letter-spacing: -1.5px; }
+    .separator { width: 112px; height: 7px; margin: 34px 0 36px; border-radius: 99px; background: #ff4c55; }
+    .explanation { max-width: 850px; color: #555357; font-size: 29px; line-height: 1.55; }
+    .bottom-bar { position: absolute; right: 90px; bottom: 90px; left: 90px; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding-top: 26px; border-top: 2px solid #2b292d; }
+    .bottom-label { color: #727174; font-size: 23px; }
+    .bottom-step { color: #727174; font-size: 23px; }
+    .accent-pattern { position: absolute; right: -20px; bottom: -35px; width: 420px; height: 390px; opacity: .94; }
+    .accent-pattern i { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); border-radius: 52% 48% 46% 54% / 68% 66% 34% 32%; background: #ff4c55; transform: rotate(var(--r)); }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><span class="eye eye-left"></span><span class="eye eye-right"></span><span class="smile"></span></span><span class="brand-name">youami</span></div>
+      <div class="step-count">{{STEP_NUM}} / {{TOTAL}}</div>
+    </header>
+    <section class="content">
+      <p class="tag">{{TAG}}</p>
+      <div class="title">{{SUBTITLE}}</div>
+      <div class="separator"></div>
+      <div class="explanation">{{EXPLANATION}}</div>
+    </section>
+    <div class="bottom-bar"><span class="bottom-label"># better every day</span><span class="bottom-step">{{STEP_NUM}} of {{TOTAL}}</span></div>
+    <div class="accent-pattern" aria-hidden="true">
+      <i style="--x:8%;--y:28%;--w:7%;--h:26%;--r:-18deg"></i><i style="--x:20%;--y:10%;--w:8%;--h:35%;--r:-8deg"></i><i style="--x:34%;--y:3%;--w:7%;--h:32%;--r:12deg"></i><i style="--x:48%;--y:18%;--w:9%;--h:40%;--r:18deg"></i><i style="--x:64%;--y:7%;--w:7%;--h:34%;--r:-4deg"></i><i style="--x:78%;--y:24%;--w:8%;--h:36%;--r:16deg"></i><i style="--x:90%;--y:5%;--w:7%;--h:28%;--r:-12deg"></i><i style="--x:28%;--y:57%;--w:9%;--h:25%;--r:24deg"></i><i style="--x:44%;--y:66%;--w:8%;--h:30%;--r:8deg"></i><i style="--x:61%;--y:58%;--w:7%;--h:24%;--r:-15deg"></i><i style="--x:75%;--y:70%;--w:10%;--h:22%;--r:20deg"></i>
+    </div>
+  </div>
+</body>
+</html>

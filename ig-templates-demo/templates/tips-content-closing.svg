@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: tips-content-closing | 1080×1350 | Editorial dark, red #e63946 -->
+<!-- PLACEHOLDERS: AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <clipPath id="tips-closing-avatarClip">
+      <circle cx="540" cy="960" r="48"/>
+    </clipPath>
+  </defs>
+
+  <g id="tips-closing-BG">
+    <rect x="0" y="0" width="1080" height="1350" fill="#111111"/>
+  </g>
+
+  <text id="tips-closing-GhostNum"
+        x="1060" y="480"
+        font-family="Playfair Display,Georgia,serif"
+        font-size="380" font-weight="900" fill="#1a1a1a"
+        letter-spacing="-12" text-anchor="end">↓</text>
+
+  <g id="tips-closing-Content">
+    <text id="tips-closing-Hook"
+          x="90" y="580"
+          font-family="Playfair Display,Georgia,serif"
+          font-size="160" font-weight="900" fill="#f0f0f0"
+          letter-spacing="-5">FOLLOW.</text>
+
+    <rect id="tips-closing-AccentBar"
+          x="90" y="608" width="120" height="6" fill="#e63946"/>
+
+    <text id="tips-closing-Sub1"
+          x="90" y="706"
+          font-family="Inter,Arial,sans-serif"
+          font-size="34" fill="#777777">Like &amp; save if this was helpful.</text>
+
+    <text id="tips-closing-Sub2"
+          x="90" y="758"
+          font-family="Inter,Arial,sans-serif"
+          font-size="30" fill="#555555">More data-backed content every week.</text>
+  </g>
+
+  <g id="tips-closing-AvatarBlock">
+    <image id="tips-closing-Avatar"
+           href="{{AVATAR_URL}}"
+           x="492" y="912" width="96" height="96"
+           clip-path="url(#tips-closing-avatarClip)"
+           preserveAspectRatio="xMidYMid slice"/>
+    <circle cx="540" cy="960" r="48" fill="none" stroke="#333333" stroke-width="2"/>
+
+    <text id="tips-closing-Handle"
+          x="540" y="1042"
+          font-family="Inter,Arial,sans-serif"
+          font-size="28" font-weight="600" fill="#888888"
+          text-anchor="middle">{{HANDLE}}</text>
+
+    <text id="tips-closing-FollowLabel"
+          x="540" y="1084"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" fill="#e63946"
+          text-anchor="middle" letter-spacing="2">FOLLOW ON INSTAGRAM</text>
+  </g>
+
+  <g id="tips-closing-BottomLine">
+    <line x1="90" y1="1228" x2="990" y2="1228" stroke="#222222" stroke-width="1.5"/>
+    <text x="540" y="1286"
+          font-family="Inter,Arial,sans-serif"
+          font-size="20" fill="#333333"
+          text-anchor="middle" letter-spacing="1">Tech &amp; AI • Every Week</text>
+  </g>
+</svg>

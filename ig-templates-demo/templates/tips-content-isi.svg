@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: tips-content-isi | 1080×1350 | Light editorial, red #e63946 -->
+<!-- PLACEHOLDERS: STEP_NUM, TAG, SUBTITLE, EXPLANATION, TOTAL, AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <clipPath id="tips-isi-avatarClip">
+      <circle cx="121" cy="1283" r="31"/>
+    </clipPath>
+  </defs>
+
+  <g id="tips-isi-BG">
+    <rect x="0" y="0" width="1080" height="1350" fill="#f9f9f9"/>
+  </g>
+
+  <text id="tips-isi-StepNum"
+        x="990" y="260"
+        font-family="Playfair Display,Georgia,serif"
+        font-size="200" font-weight="900" fill="#ebebeb"
+        letter-spacing="-6" text-anchor="end">{{STEP_NUM}}</text>
+
+  <g id="tips-isi-Content">
+    <text id="tips-isi-Label"
+          x="90" y="550"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" font-weight="600" fill="#e63946" letter-spacing="3">{{TAG}}</text>
+
+    <text id="tips-isi-Title"
+          x="90" y="660"
+          font-family="Playfair Display,Georgia,serif"
+          font-size="72" font-weight="700" fill="#111111" letter-spacing="-2"
+          textLength="900" lengthAdjust="spacingAndGlyphs">{{SUBTITLE}}</text>
+
+    <rect id="tips-isi-Separator" x="90" y="700" width="80" height="4" fill="#111111"/>
+
+    <text id="tips-isi-Explanation"
+          x="90" y="778"
+          font-family="Inter,Arial,sans-serif"
+          font-size="32" fill="#444444"
+          textLength="900" lengthAdjust="spacingAndGlyphs">{{EXPLANATION}}</text>
+  </g>
+
+  <g id="tips-isi-BottomBar">
+    <line x1="90" y1="1228" x2="990" y2="1228" stroke="#dddddd" stroke-width="2"/>
+
+    <g id="tips-isi-AvatarGroup">
+      <image id="tips-isi-Avatar"
+             href="{{AVATAR_URL}}"
+             x="90" y="1252" width="62" height="62"
+             clip-path="url(#tips-isi-avatarClip)"
+             preserveAspectRatio="xMidYMid slice"/>
+      <circle cx="121" cy="1283" r="31" fill="none" stroke="#cccccc" stroke-width="1.5"/>
+    </g>
+
+    <text id="tips-isi-Handle"
+          x="170" y="1289"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" font-weight="500" fill="#555555">{{HANDLE}}</text>
+
+    <text id="tips-isi-Indicator"
+          x="990" y="1289"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" fill="#aaaaaa" text-anchor="end">{{STEP_NUM}} / {{TOTAL}}</text>
+  </g>
+</svg>

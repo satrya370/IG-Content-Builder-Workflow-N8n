@@ -1,0 +1,674 @@
+{
+  "openai": {
+    "brandName": "OpenAI",
+    "officialSite": "https://openai.com",
+    "logoUrl": "https://avatars.githubusercontent.com/openai",
+    "fallbackLogoUrls": ["https://openai.com/favicon.ico"],
+    "githubRepo": "openai/openai-node",
+    "simpleIconSlug": "openai"
+  },
+  "anthropic": {
+    "brandName": "Anthropic",
+    "officialSite": "https://www.anthropic.com",
+    "logoUrl": "https://avatars.githubusercontent.com/anthropics",
+    "fallbackLogoUrls": ["https://www.anthropic.com/favicon.ico"],
+    "githubRepo": "anthropics/anthropic-sdk-typescript",
+    "simpleIconSlug": "anthropic"
+  },
+  "google": {
+    "brandName": "Google",
+    "officialSite": "https://www.google.com",
+    "logoUrl": "https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+    "fallbackLogoUrls": ["https://www.google.com/favicon.ico"],
+    "githubRepo": "google/generative-ai-js",
+    "simpleIconSlug": "google"
+  },
+  "gemini": {
+    "brandName": "Gemini",
+    "officialSite": "https://gemini.google.com",
+    "logoUrl": "https://www.gstatic.com/images/branding/product/2x/gemini_64dp.png",
+    "fallbackLogoUrls": ["https://gemini.google.com/favicon.ico"],
+    "githubRepo": "google-gemini/generative-ai-js",
+    "simpleIconSlug": "googlegemini"
+  },
+  "github": {
+    "brandName": "GitHub",
+    "officialSite": "https://github.com",
+    "logoUrl": "https://avatars.githubusercontent.com/github",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "github",
+    "simpleIconSlug": "github"
+  },
+  "react": {
+    "brandName": "React",
+    "officialSite": "https://react.dev",
+    "logoUrl": "https://cdn.simpleicons.org/react/000000",
+    "fallbackLogoUrls": ["https://react.dev/favicon.ico"],
+    "githubRepo": "facebook/react",
+    "simpleIconSlug": "react"
+  },
+  "vue": {
+    "brandName": "Vue.js",
+    "officialSite": "https://vuejs.org",
+    "logoUrl": "https://cdn.simpleicons.org/vuedotjs/000000",
+    "fallbackLogoUrls": ["https://vuejs.org/favicon.ico"],
+    "githubRepo": "vuejs/core",
+    "simpleIconSlug": "vuedotjs"
+  },
+  "svelte": {
+    "brandName": "Svelte",
+    "officialSite": "https://svelte.dev",
+    "logoUrl": "https://cdn.simpleicons.org/svelte/000000",
+    "fallbackLogoUrls": ["https://svelte.dev/favicon.ico"],
+    "githubRepo": "sveltejs/svelte",
+    "simpleIconSlug": "svelte"
+  },
+  "typescript": {
+    "brandName": "TypeScript",
+    "officialSite": "https://www.typescriptlang.org",
+    "logoUrl": "https://cdn.simpleicons.org/typescript/000000",
+    "fallbackLogoUrls": ["https://www.typescriptlang.org/favicon.ico"],
+    "githubRepo": "microsoft/TypeScript",
+    "simpleIconSlug": "typescript"
+  },
+  "javascript": {
+    "brandName": "JavaScript",
+    "officialSite": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+    "logoUrl": "https://cdn.simpleicons.org/javascript/000000",
+    "fallbackLogoUrls": ["https://developer.mozilla.org/favicon.ico"],
+    "githubRepo": "tc39/ecma262",
+    "simpleIconSlug": "javascript"
+  },
+  "nodejs": {
+    "brandName": "Node.js",
+    "officialSite": "https://nodejs.org",
+    "logoUrl": "https://cdn.simpleicons.org/nodedotjs/000000",
+    "fallbackLogoUrls": ["https://nodejs.org/favicon.ico"],
+    "githubRepo": "nodejs/node",
+    "simpleIconSlug": "nodedotjs"
+  },
+  "docker": {
+    "brandName": "Docker",
+    "officialSite": "https://www.docker.com",
+    "logoUrl": "https://cdn.simpleicons.org/docker/000000",
+    "fallbackLogoUrls": ["https://www.docker.com/favicon.ico"],
+    "githubRepo": "docker/cli",
+    "simpleIconSlug": "docker"
+  },
+  "kubernetes": {
+    "brandName": "Kubernetes",
+    "officialSite": "https://kubernetes.io",
+    "logoUrl": "https://cdn.simpleicons.org/kubernetes/000000",
+    "fallbackLogoUrls": ["https://kubernetes.io/favicon.ico"],
+    "githubRepo": "kubernetes/kubernetes",
+    "simpleIconSlug": "kubernetes"
+  },
+  "python": {
+    "brandName": "Python",
+    "officialSite": "https://www.python.org",
+    "logoUrl": "https://cdn.simpleicons.org/python/000000",
+    "fallbackLogoUrls": ["https://www.python.org/favicon.ico"],
+    "githubRepo": "python/cpython",
+    "simpleIconSlug": "python"
+  },
+  "rust": {
+    "brandName": "Rust",
+    "officialSite": "https://www.rust-lang.org",
+    "logoUrl": "https://cdn.simpleicons.org/rust/000000",
+    "fallbackLogoUrls": ["https://www.rust-lang.org/favicon.ico"],
+    "githubRepo": "rust-lang/rust",
+    "simpleIconSlug": "rust"
+  },
+  "golang": {
+    "brandName": "Golang",
+    "officialSite": "https://go.dev",
+    "logoUrl": "https://cdn.simpleicons.org/go/000000",
+    "fallbackLogoUrls": ["https://go.dev/favicon.ico"],
+    "githubRepo": "golang/go",
+    "simpleIconSlug": "go"
+  },
+  "go": {
+    "brandName": "Go",
+    "officialSite": "https://go.dev",
+    "logoUrl": "https://cdn.simpleicons.org/go/000000",
+    "fallbackLogoUrls": ["https://go.dev/favicon.ico"],
+    "githubRepo": "golang/go",
+    "simpleIconSlug": "go"
+  },
+  "bun": {
+    "brandName": "Bun",
+    "officialSite": "https://bun.sh",
+    "logoUrl": "https://cdn.simpleicons.org/bun/000000",
+    "fallbackLogoUrls": ["https://bun.sh/favicon.ico"],
+    "githubRepo": "oven-sh/bun",
+    "simpleIconSlug": "bun"
+  },
+  "deno": {
+    "brandName": "Deno",
+    "officialSite": "https://deno.com",
+    "logoUrl": "https://cdn.simpleicons.org/deno/000000",
+    "fallbackLogoUrls": ["https://deno.com/favicon.ico"],
+    "githubRepo": "denoland/deno",
+    "simpleIconSlug": "deno"
+  },
+  "angular": {
+    "brandName": "Angular",
+    "officialSite": "https://angular.dev",
+    "logoUrl": "https://cdn.simpleicons.org/angular/000000",
+    "fallbackLogoUrls": ["https://angular.dev/favicon.ico"],
+    "githubRepo": "angular/angular",
+    "simpleIconSlug": "angular"
+  },
+  "astro": {
+    "brandName": "Astro",
+    "officialSite": "https://astro.build",
+    "logoUrl": "https://cdn.simpleicons.org/astro/000000",
+    "fallbackLogoUrls": ["https://astro.build/favicon.ico"],
+    "githubRepo": "withastro/astro",
+    "simpleIconSlug": "astro"
+  },
+  "remix": {
+    "brandName": "Remix",
+    "officialSite": "https://remix.run",
+    "logoUrl": "https://cdn.simpleicons.org/remix/000000",
+    "fallbackLogoUrls": ["https://remix.run/favicon.ico"],
+    "githubRepo": "remix-run/remix",
+    "simpleIconSlug": "remix"
+  },
+  "nuxt": {
+    "brandName": "Nuxt",
+    "officialSite": "https://nuxt.com",
+    "logoUrl": "https://cdn.simpleicons.org/nuxtdotjs/000000",
+    "fallbackLogoUrls": ["https://nuxt.com/favicon.ico"],
+    "githubRepo": "nuxt/nuxt",
+    "simpleIconSlug": "nuxtdotjs"
+  },
+  "tailwindcss": {
+    "brandName": "Tailwind CSS",
+    "officialSite": "https://tailwindcss.com",
+    "logoUrl": "https://cdn.simpleicons.org/tailwindcss/000000",
+    "fallbackLogoUrls": ["https://tailwindcss.com/favicon.ico"],
+    "githubRepo": "tailwindlabs/tailwindcss",
+    "simpleIconSlug": "tailwindcss"
+  },
+  "vite": {
+    "brandName": "Vite",
+    "officialSite": "https://vite.dev",
+    "logoUrl": "https://cdn.simpleicons.org/vite/000000",
+    "fallbackLogoUrls": ["https://vite.dev/favicon.ico"],
+    "githubRepo": "vitejs/vite",
+    "simpleIconSlug": "vite"
+  },
+  "storybook": {
+    "brandName": "Storybook",
+    "officialSite": "https://storybook.js.org",
+    "logoUrl": "https://cdn.simpleicons.org/storybook/000000",
+    "fallbackLogoUrls": ["https://storybook.js.org/favicon.ico"],
+    "githubRepo": "storybookjs/storybook",
+    "simpleIconSlug": "storybook"
+  },
+  "nestjs": {
+    "brandName": "NestJS",
+    "officialSite": "https://nestjs.com",
+    "logoUrl": "https://cdn.simpleicons.org/nestjs/000000",
+    "fallbackLogoUrls": ["https://nestjs.com/favicon.ico"],
+    "githubRepo": "nestjs/nest",
+    "simpleIconSlug": "nestjs"
+  },
+  "fastify": {
+    "brandName": "Fastify",
+    "officialSite": "https://fastify.dev",
+    "logoUrl": "https://cdn.simpleicons.org/fastify/000000",
+    "fallbackLogoUrls": ["https://fastify.dev/favicon.ico"],
+    "githubRepo": "fastify/fastify",
+    "simpleIconSlug": "fastify"
+  },
+  "django": {
+    "brandName": "Django",
+    "officialSite": "https://www.djangoproject.com",
+    "logoUrl": "https://cdn.simpleicons.org/django/000000",
+    "fallbackLogoUrls": ["https://www.djangoproject.com/favicon.ico"],
+    "githubRepo": "django/django",
+    "simpleIconSlug": "django"
+  },
+  "flask": {
+    "brandName": "Flask",
+    "officialSite": "https://flask.palletsprojects.com",
+    "logoUrl": "https://cdn.simpleicons.org/flask/000000",
+    "fallbackLogoUrls": ["https://flask.palletsprojects.com/favicon.ico"],
+    "githubRepo": "pallets/flask",
+    "simpleIconSlug": "flask"
+  },
+  "fastapi": {
+    "brandName": "FastAPI",
+    "officialSite": "https://fastapi.tiangolo.com",
+    "logoUrl": "https://cdn.simpleicons.org/fastapi/000000",
+    "fallbackLogoUrls": ["https://fastapi.tiangolo.com/img/favicon.png"],
+    "githubRepo": "fastapi/fastapi",
+    "simpleIconSlug": "fastapi"
+  },
+  "prisma": {
+    "brandName": "Prisma",
+    "officialSite": "https://www.prisma.io",
+    "logoUrl": "https://cdn.simpleicons.org/prisma/000000",
+    "fallbackLogoUrls": ["https://www.prisma.io/favicon.ico"],
+    "githubRepo": "prisma/prisma",
+    "simpleIconSlug": "prisma"
+  },
+  "supabase": {
+    "brandName": "Supabase",
+    "officialSite": "https://supabase.com",
+    "logoUrl": "https://cdn.simpleicons.org/supabase/000000",
+    "fallbackLogoUrls": ["https://supabase.com/favicon.ico"],
+    "githubRepo": "supabase/supabase",
+    "simpleIconSlug": "supabase"
+  },
+  "cloudflare": {
+    "brandName": "Cloudflare",
+    "officialSite": "https://cloudflare.com",
+    "logoUrl": "https://cdn.simpleicons.org/cloudflare/000000",
+    "fallbackLogoUrls": ["https://cloudflare.com/favicon.ico"],
+    "githubRepo": "cloudflare/cloudflare-docs",
+    "simpleIconSlug": "cloudflare"
+  },
+  "netlify": {
+    "brandName": "Netlify",
+    "officialSite": "https://www.netlify.com",
+    "logoUrl": "https://cdn.simpleicons.org/netlify/000000",
+    "fallbackLogoUrls": ["https://www.netlify.com/favicon.ico"],
+    "githubRepo": "netlify/cli",
+    "simpleIconSlug": "netlify"
+  },
+  "flyio": {
+    "brandName": "Fly.io",
+    "officialSite": "https://fly.io",
+    "logoUrl": "https://avatars.githubusercontent.com/fly-apps",
+    "fallbackLogoUrls": ["https://fly.io/favicon.ico"],
+    "githubRepo": "superfly/flyctl",
+    "simpleIconSlug": "flydotio"
+  },
+  "firebase": {
+    "brandName": "Firebase",
+    "officialSite": "https://firebase.google.com",
+    "logoUrl": "https://cdn.simpleicons.org/firebase/000000",
+    "fallbackLogoUrls": ["https://firebase.google.com/favicon.ico"],
+    "githubRepo": "firebase/firebase-js-sdk",
+    "simpleIconSlug": "firebase"
+  },
+  "mongodb": {
+    "brandName": "MongoDB",
+    "officialSite": "https://www.mongodb.com",
+    "logoUrl": "https://cdn.simpleicons.org/mongodb/000000",
+    "fallbackLogoUrls": ["https://www.mongodb.com/favicon.ico"],
+    "githubRepo": "mongodb/mongo",
+    "simpleIconSlug": "mongodb"
+  },
+  "redis": {
+    "brandName": "Redis",
+    "officialSite": "https://redis.io",
+    "logoUrl": "https://cdn.simpleicons.org/redis/000000",
+    "fallbackLogoUrls": ["https://redis.io/favicon.ico"],
+    "githubRepo": "redis/redis",
+    "simpleIconSlug": "redis"
+  },
+  "postgres": {
+    "brandName": "Postgres",
+    "officialSite": "https://www.postgresql.org",
+    "logoUrl": "https://cdn.simpleicons.org/postgresql/000000",
+    "fallbackLogoUrls": ["https://www.postgresql.org/favicon.ico"],
+    "githubRepo": "postgres/postgres",
+    "simpleIconSlug": "postgresql"
+  },
+  "cursor": {
+    "brandName": "Cursor",
+    "officialSite": "https://cursor.com",
+    "logoUrl": "https://avatars.githubusercontent.com/getcursor",
+    "fallbackLogoUrls": ["https://cursor.com/favicon.ico"],
+    "githubRepo": "getcursor/cursor",
+    "simpleIconSlug": "cursor"
+  },
+  "jetbrains": {
+    "brandName": "JetBrains",
+    "officialSite": "https://www.jetbrains.com",
+    "logoUrl": "https://cdn.simpleicons.org/jetbrains/000000",
+    "fallbackLogoUrls": ["https://www.jetbrains.com/favicon.ico"],
+    "githubRepo": "JetBrains/intellij-community",
+    "simpleIconSlug": "jetbrains"
+  },
+  "gitlab": {
+    "brandName": "GitLab",
+    "officialSite": "https://gitlab.com",
+    "logoUrl": "https://cdn.simpleicons.org/gitlab/000000",
+    "fallbackLogoUrls": ["https://gitlab.com/favicon.ico"],
+    "githubRepo": "gitlab-org/gitlab",
+    "simpleIconSlug": "gitlab"
+  },
+  "postman": {
+    "brandName": "Postman",
+    "officialSite": "https://www.postman.com",
+    "logoUrl": "https://cdn.simpleicons.org/postman/000000",
+    "fallbackLogoUrls": ["https://www.postman.com/favicon.ico"],
+    "githubRepo": "postmanlabs/postman-app-support",
+    "simpleIconSlug": "postman"
+  },
+  "stripe": {
+    "brandName": "Stripe",
+    "officialSite": "https://stripe.com",
+    "logoUrl": "https://cdn.simpleicons.org/stripe/000000",
+    "fallbackLogoUrls": ["https://stripe.com/favicon.ico"],
+    "githubRepo": "stripe/stripe-node",
+    "simpleIconSlug": "stripe"
+  },
+  "twilio": {
+    "brandName": "Twilio",
+    "officialSite": "https://www.twilio.com",
+    "logoUrl": "https://cdn.simpleicons.org/twilio/000000",
+    "fallbackLogoUrls": ["https://www.twilio.com/favicon.ico"],
+    "githubRepo": "twilio/twilio-node",
+    "simpleIconSlug": "twilio"
+  },
+  "n8n": {
+    "brandName": "n8n",
+    "officialSite": "https://n8n.io",
+    "logoUrl": "https://cdn.simpleicons.org/n8n/000000",
+    "fallbackLogoUrls": ["https://n8n.io/favicon.ico"],
+    "githubRepo": "n8n-io/n8n",
+    "simpleIconSlug": "n8n"
+  },
+  "ollama": {
+    "brandName": "Ollama",
+    "officialSite": "https://ollama.com",
+    "logoUrl": "https://cdn.simpleicons.org/ollama/000000",
+    "fallbackLogoUrls": ["https://ollama.com/favicon.ico"],
+    "githubRepo": "ollama/ollama",
+    "simpleIconSlug": "ollama"
+  },
+  "vercel": {
+    "brandName": "Vercel",
+    "officialSite": "https://vercel.com",
+    "logoUrl": "https://cdn.simpleicons.org/vercel/000000",
+    "fallbackLogoUrls": ["https://vercel.com/favicon.ico"],
+    "githubRepo": "vercel/vercel",
+    "simpleIconSlug": "vercel"
+  },
+  "nextjs": {
+    "brandName": "Next.js",
+    "officialSite": "https://nextjs.org",
+    "logoUrl": "https://cdn.simpleicons.org/nextdotjs/000000",
+    "fallbackLogoUrls": ["https://nextjs.org/favicon.ico"],
+    "githubRepo": "vercel/next.js",
+    "simpleIconSlug": "nextdotjs"
+  },
+  "deepseek": {
+    "brandName": "DeepSeek",
+    "officialSite": "https://www.deepseek.com",
+    "logoUrl": "https://avatars.githubusercontent.com/deepseek-ai",
+    "fallbackLogoUrls": ["https://www.deepseek.com/favicon.ico"],
+    "githubRepo": "deepseek-ai/DeepSeek-V3",
+    "simpleIconSlug": "deepseek"
+  },
+  "glm": {
+    "brandName": "GLM",
+    "officialSite": "https://github.com/zhipuai",
+    "logoUrl": "https://avatars.githubusercontent.com/zhipuai",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "zhipuai/zhipuai-sdk-nodejs",
+    "simpleIconSlug": "glm"
+  },
+  "zhipuai": {
+    "brandName": "Zhipu AI",
+    "officialSite": "https://github.com/zhipuai",
+    "logoUrl": "https://avatars.githubusercontent.com/zhipuai",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "zhipuai/zhipuai-sdk-nodejs",
+    "simpleIconSlug": "zhipuai"
+  },
+  "tencent": {
+    "brandName": "Tencent",
+    "officialSite": "https://github.com/Tencent",
+    "logoUrl": "https://avatars.githubusercontent.com/Tencent",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "Tencent/HunyuanDiT",
+    "simpleIconSlug": "tencent"
+  },
+  "hunyuan": {
+    "brandName": "Hunyuan",
+    "officialSite": "https://github.com/Tencent",
+    "logoUrl": "https://avatars.githubusercontent.com/Tencent",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "Tencent/Hunyuan3D-2",
+    "simpleIconSlug": "tencent"
+  },
+  "bytedance": {
+    "brandName": "ByteDance",
+    "officialSite": "https://github.com/bytedance",
+    "logoUrl": "https://avatars.githubusercontent.com/bytedance",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "bytedance/deer-flow",
+    "simpleIconSlug": "bytedance"
+  },
+  "seed": {
+    "brandName": "Seed",
+    "officialSite": "https://github.com/bytedance",
+    "logoUrl": "https://avatars.githubusercontent.com/bytedance",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "bytedance/seed-tts-eval",
+    "simpleIconSlug": "seed"
+  },
+  "doubao": {
+    "brandName": "Doubao",
+    "officialSite": "https://github.com/bytedance",
+    "logoUrl": "https://avatars.githubusercontent.com/bytedance",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "bytedance/doubao-seededit-3.0",
+    "simpleIconSlug": "doubao"
+  },
+  "minimax": {
+    "brandName": "MiniMax",
+    "officialSite": "https://github.com/MiniMax-AI",
+    "logoUrl": "https://avatars.githubusercontent.com/MiniMax-AI",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "MiniMax-AI/MiniMax-M1",
+    "simpleIconSlug": "minimax"
+  },
+  "kimi": {
+    "brandName": "Kimi",
+    "officialSite": "https://github.com/MoonshotAI",
+    "logoUrl": "https://avatars.githubusercontent.com/MoonshotAI",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "MoonshotAI/Kimi-K2",
+    "simpleIconSlug": "kimi"
+  },
+  "moonshot": {
+    "brandName": "Moonshot",
+    "officialSite": "https://github.com/MoonshotAI",
+    "logoUrl": "https://avatars.githubusercontent.com/MoonshotAI",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "MoonshotAI/Kimi-K2",
+    "simpleIconSlug": "moonshot"
+  },
+  "grok": {
+    "brandName": "Grok",
+    "officialSite": "https://x.ai",
+    "logoUrl": "https://avatars.githubusercontent.com/xai-org",
+    "fallbackLogoUrls": ["https://x.ai/favicon.ico"],
+    "githubRepo": "xai-org/grok",
+    "simpleIconSlug": "grok"
+  },
+  "xai": {
+    "brandName": "xAI",
+    "officialSite": "https://x.ai",
+    "logoUrl": "https://avatars.githubusercontent.com/xai-org",
+    "fallbackLogoUrls": ["https://x.ai/favicon.ico"],
+    "githubRepo": "xai-org/grok",
+    "simpleIconSlug": "x"
+  },
+  "qwen": {
+    "brandName": "Qwen",
+    "officialSite": "https://github.com/QwenLM",
+    "logoUrl": "https://avatars.githubusercontent.com/QwenLM",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "QwenLM/Qwen3",
+    "simpleIconSlug": "qwen"
+  },
+  "llama": {
+    "brandName": "Llama",
+    "officialSite": "https://github.com/meta-llama",
+    "logoUrl": "https://avatars.githubusercontent.com/meta-llama",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "meta-llama/llama-models",
+    "simpleIconSlug": "llama"
+  },
+  "metallama": {
+    "brandName": "Meta Llama",
+    "officialSite": "https://github.com/meta-llama",
+    "logoUrl": "https://avatars.githubusercontent.com/meta-llama",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "meta-llama/llama-models",
+    "simpleIconSlug": "metallama"
+  },
+  "mistral": {
+    "brandName": "Mistral",
+    "officialSite": "https://github.com/mistralai",
+    "logoUrl": "https://avatars.githubusercontent.com/mistralai",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "mistralai/mistral-inference",
+    "simpleIconSlug": "mistral"
+  },
+  "huggingface": {
+    "brandName": "Hugging Face",
+    "officialSite": "https://huggingface.co",
+    "logoUrl": "https://avatars.githubusercontent.com/huggingface",
+    "fallbackLogoUrls": ["https://huggingface.co/favicon.ico"],
+    "githubRepo": "huggingface/transformers",
+    "simpleIconSlug": "huggingface"
+  },
+  "stabilityai": {
+    "brandName": "Stability AI",
+    "officialSite": "https://github.com/stability-ai",
+    "logoUrl": "https://avatars.githubusercontent.com/stability-ai",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "stability-ai/stable-audio-tools",
+    "simpleIconSlug": "stabilityai"
+  },
+  "cohere": {
+    "brandName": "Cohere",
+    "officialSite": "https://cohere.com",
+    "logoUrl": "https://avatars.githubusercontent.com/CohereAI",
+    "fallbackLogoUrls": ["https://cohere.com/favicon.ico"],
+    "githubRepo": "cohere-ai/cohere-typescript",
+    "simpleIconSlug": "cohere"
+  },
+  "openbmb": {
+    "brandName": "OpenBMB",
+    "officialSite": "https://github.com/OpenBMB",
+    "logoUrl": "https://avatars.githubusercontent.com/OpenBMB",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "OpenBMB/MiniCPM-V",
+    "simpleIconSlug": "openbmb"
+  },
+  "lmsys": {
+    "brandName": "LMSYS",
+    "officialSite": "https://github.com/lm-sys",
+    "logoUrl": "https://avatars.githubusercontent.com/lm-sys",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "lm-sys/FastChat",
+    "simpleIconSlug": "lmsys"
+  },
+  "claudecode": {
+    "brandName": "Claude Code",
+    "officialSite": "https://code.claude.com/docs/en/overview",
+    "logoUrl": "https://avatars.githubusercontent.com/anthropics",
+    "fallbackLogoUrls": ["https://code.claude.com/favicon.ico"],
+    "githubRepo": "anthropics/claude-code",
+    "simpleIconSlug": "claude"
+  },
+  "antigravity": {
+    "brandName": "Antigravity CLI",
+    "officialSite": "https://antigravity.google/product/antigravity-cli",
+    "logoUrl": "https://avatars.githubusercontent.com/google-antigravity",
+    "fallbackLogoUrls": ["https://antigravity.google/favicon.ico"],
+    "githubRepo": "google-antigravity/antigravity-cli",
+    "simpleIconSlug": "google"
+  },
+  "opencode": {
+    "brandName": "OpenCode",
+    "officialSite": "https://opencode.ai",
+    "logoUrl": "https://avatars.githubusercontent.com/anomalyco",
+    "fallbackLogoUrls": ["https://opencode.ai/favicon.ico"],
+    "githubRepo": "anomalyco/opencode",
+    "simpleIconSlug": "opencode"
+  },
+  "pi": {
+    "brandName": "Pi",
+    "officialSite": "https://pi.dev",
+    "logoUrl": "https://avatars.githubusercontent.com/earendil-works",
+    "fallbackLogoUrls": ["https://pi.dev/favicon.ico"],
+    "githubRepo": "earendil-works/pi",
+    "simpleIconSlug": "pi"
+  },
+  "kilocode": {
+    "brandName": "Kilo Code",
+    "officialSite": "https://kilo.ai",
+    "logoUrl": "https://avatars.githubusercontent.com/Kilo-Org",
+    "fallbackLogoUrls": ["https://kilo.ai/favicon.ico"],
+    "githubRepo": "Kilo-Org/kilocode",
+    "simpleIconSlug": "kilocode"
+  },
+  "cline": {
+    "brandName": "Cline",
+    "officialSite": "https://github.com/cline/cline",
+    "logoUrl": "https://avatars.githubusercontent.com/cline",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "cline/cline",
+    "simpleIconSlug": "cline"
+  },
+  "hermes": {
+    "brandName": "Hermes Agent",
+    "officialSite": "https://github.com/NousResearch/hermes-agent",
+    "logoUrl": "https://avatars.githubusercontent.com/NousResearch",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "NousResearch/hermes-agent",
+    "simpleIconSlug": "hermes"
+  },
+  "openclaw": {
+    "brandName": "OpenClaw",
+    "officialSite": "https://github.com/openclaw/openclaw",
+    "logoUrl": "https://avatars.githubusercontent.com/openclaw",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "openclaw/openclaw",
+    "simpleIconSlug": "openclaw"
+  },
+  "codex": {
+    "brandName": "Codex CLI",
+    "officialSite": "https://github.com/openai/codex",
+    "logoUrl": "https://avatars.githubusercontent.com/openai",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "openai/codex",
+    "simpleIconSlug": "codex"
+  },
+  "aider": {
+    "brandName": "Aider",
+    "officialSite": "https://github.com/Aider-AI/aider",
+    "logoUrl": "https://avatars.githubusercontent.com/Aider-AI",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "Aider-AI/aider",
+    "simpleIconSlug": "aider"
+  },
+  "goose": {
+    "brandName": "Goose",
+    "officialSite": "https://github.com/block/goose",
+    "logoUrl": "https://avatars.githubusercontent.com/block",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "block/goose",
+    "simpleIconSlug": "goose"
+  },
+  "roocode": {
+    "brandName": "Roo Code",
+    "officialSite": "https://github.com/RooCodeInc/Roo-Code",
+    "logoUrl": "https://avatars.githubusercontent.com/RooCodeInc",
+    "fallbackLogoUrls": ["https://github.com/favicon.ico"],
+    "githubRepo": "RooCodeInc/Roo-Code",
+    "simpleIconSlug": "roocode"
+  }
+}

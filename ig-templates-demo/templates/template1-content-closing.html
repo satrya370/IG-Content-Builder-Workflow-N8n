@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 1080px; height: 1350px; margin: 0; overflow: hidden; }
+    body { background: #ececec; font-family: Arial, Helvetica, sans-serif; }
+    .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; padding: 90px; background: #fff; color: #2b292d; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark { position: relative; width: 34px; height: 34px; border-radius: 50%; background: #ff4c55; }
+    .eye { position: absolute; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+    .eye-left { left: 8px; }
+    .eye-right { right: 8px; }
+    .smile { position: absolute; left: 8px; bottom: 8px; width: 18px; height: 9px; border-bottom: 4px solid #fff; border-radius: 0 0 18px 18px; }
+    .brand-name { font-size: 40px; font-weight: 800; letter-spacing: -1px; }
+    .account-label { color: #727174; font-size: 25px; letter-spacing: 4px; }
+    .content { position: absolute; top: 31%; left: 90px; z-index: 2; }
+    .hook { font-family: Georgia, 'Times New Roman', serif; font-size: 158px; font-weight: 800; line-height: .88; letter-spacing: -7px; }
+    .accent-bar { width: 120px; height: 8px; margin: 38px 0 50px; border-radius: 99px; background: #ff4c55; }
+    .sub1 { margin: 0 0 18px; font-size: 36px; color: #555357; }
+    .sub2 { margin: 0; font-size: 31px; color: #727174; }
+    .bottom-line { position: absolute; right: 90px; bottom: 90px; left: 90px; z-index: 2; padding-top: 28px; border-top: 2px solid #2b292d; text-align: center; }
+    .bottom-tag { color: #ff4c55; font-size: 22px; font-weight: 700; letter-spacing: 2px; }
+    .accent-pattern { position: absolute; right: -20px; bottom: -35px; width: 420px; height: 390px; opacity: .94; }
+    .accent-pattern i { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); border-radius: 52% 48% 46% 54% / 68% 66% 34% 32%; background: #ff4c55; transform: rotate(var(--r)); }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true"><span class="eye eye-left"></span><span class="eye eye-right"></span><span class="smile"></span></span><span class="brand-name">youami</span></div><div class="account-label">{{ACCOUNT_WATERMARK}}</div></header>
+    <section class="content"><div class="hook">FOLLOW.</div><div class="accent-bar"></div><p class="sub1">Like &amp; save if this was helpful.</p><p class="sub2">{{FOLLOW_CTA}}</p></section>
+    <div class="bottom-line"><span class="bottom-tag">BETTER EVERY DAY</span></div>
+    <div class="accent-pattern" aria-hidden="true">
+      <i style="--x:8%;--y:28%;--w:7%;--h:26%;--r:-18deg"></i><i style="--x:20%;--y:10%;--w:8%;--h:35%;--r:-8deg"></i><i style="--x:34%;--y:3%;--w:7%;--h:32%;--r:12deg"></i><i style="--x:48%;--y:18%;--w:9%;--h:40%;--r:18deg"></i><i style="--x:64%;--y:7%;--w:7%;--h:34%;--r:-4deg"></i><i style="--x:78%;--y:24%;--w:8%;--h:36%;--r:16deg"></i><i style="--x:90%;--y:5%;--w:7%;--h:28%;--r:-12deg"></i><i style="--x:28%;--y:57%;--w:9%;--h:25%;--r:24deg"></i><i style="--x:44%;--y:66%;--w:8%;--h:30%;--r:8deg"></i><i style="--x:61%;--y:58%;--w:7%;--h:24%;--r:-15deg"></i><i style="--x:75%;--y:70%;--w:10%;--h:22%;--r:20deg"></i>
+    </div>
+  </div>
+</body>
+</html>

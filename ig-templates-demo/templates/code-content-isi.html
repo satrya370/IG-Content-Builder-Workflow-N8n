@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 1080px; height: 1350px; overflow: hidden; background: #f6f3ee; }
+
+    .slide {
+      position: relative; width: 1080px; height: 1350px; overflow: hidden;
+      color: #1c1d26; font-family: 'Inter', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 14% 14%, rgba(184, 114, 10, 0.08), transparent 26%),
+        radial-gradient(circle at 88% 88%, rgba(15, 118, 110, 0.08), transparent 28%),
+        linear-gradient(180deg, #fbf9f5 0%, #f5f1ea 48%, #efe9df 100%);
+    }
+
+    .grain, .vignette { position: absolute; inset: 0; pointer-events: none; }
+
+    .grain {
+      opacity: 0.035;
+      background-image:
+        radial-gradient(rgba(28,29,38,0.5) 0.6px, transparent 0.6px),
+        radial-gradient(rgba(28,29,38,0.25) 0.6px, transparent 0.6px);
+      background-position: 0 0, 11px 11px;
+      background-size: 22px 22px;
+    }
+
+    .vignette { box-shadow: inset 0 -180px 220px rgba(90,65,30,0.05), inset 0 0 120px rgba(90,65,30,0.03); }
+
+    .content { position: relative; z-index: 2; padding: 74px 72px 58px; height: 100%; display: flex; flex-direction: column; }
+
+    .pill {
+      display: inline-flex; align-items: center; align-self: flex-start;
+      padding: 16px 28px; border-radius: 999px;
+      background: rgba(15, 118, 110, 0.10); color: #0f4a45;
+      font-size: 26px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 92px;
+    }
+
+    .count {
+      color: rgba(28,29,38,0.62); font-family: 'Oswald', 'Arial Narrow', sans-serif;
+      font-size: 42px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 34px;
+    }
+
+    .title {
+      width: 100%; color: #1c1d26; font-family: 'Oswald', 'Arial Narrow', sans-serif;
+      font-size: 64px; font-weight: 600; line-height: 1.02; letter-spacing: -1.2px; text-align: left; margin-bottom: 30px;
+    }
+
+    .body {
+      width: 100%; color: rgba(28,29,38,0.72); font-size: 24px; line-height: 1.62; font-weight: 500;
+      white-space: pre-line; text-wrap: pretty; text-align: justify; text-justify: inter-word;
+    }
+
+    .summary-card {
+      margin-top: auto; width: 100%; padding: 34px 34px 30px; border-radius: 18px;
+      background: rgba(255,255,255,0.85);
+      box-shadow: inset 4px 0 0 #b8720a, 0 10px 26px rgba(90,65,30,0.06);
+    }
+
+    .summary-label { color: rgba(28,29,38,0.5); font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+    .summary-title { color: #1c1d26; font-size: 28px; line-height: 1.35; font-weight: 700; margin-bottom: 12px; text-wrap: pretty; }
+    .summary-meta { color: #8a5608; font-family: 'Oswald', 'Arial Narrow', sans-serif; font-size: 24px; letter-spacing: 1px; text-transform: uppercase; }
+
+    .footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 58px; padding-top: 26px; border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .watermark { color: rgba(28,29,38,0.55); font-size: 22px; font-weight: 500; }
+    .pager { display: flex; gap: 11px; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,0.15); }
+    .pagination-01 .dot:nth-child(2), .pagination-02 .dot:nth-child(3), .pagination-03 .dot:nth-child(4),
+    .pagination-04 .dot:nth-child(5), .pagination-05 .dot:nth-child(6) { background: #1c1d26; }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="content">
+      <div class="pill">{{SLIDE_LABEL}}</div>
+      <div class="count">{{STEP_NUM}} / {{TOTAL}}</div>
+      <div class="title">{{SUBTITLE}}</div>
+      <div class="body">{{EXPLANATION}}</div>
+      <div class="summary-card">
+        <div class="summary-label">{{ANGLE_LABEL}}</div>
+        <div class="summary-title">{{ANGLE_NOTE}}</div>
+        <div class="summary-meta">{{SLIDE_LABEL}}</div>
+      </div>
+      <div class="footer">
+        <div class="watermark">{{ACCOUNT_WATERMARK}}</div>
+        <div class="pager pagination-{{STEP_NUM}}">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

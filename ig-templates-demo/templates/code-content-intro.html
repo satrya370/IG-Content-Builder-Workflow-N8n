@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 1080px; height: 1350px; overflow: hidden; background: #f6f3ee; }
+
+    .slide {
+      position: relative;
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      color: #1c1d26;
+      font-family: 'Inter', Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(184, 114, 10, 0.10), transparent 30%),
+        radial-gradient(circle at 82% 16%, rgba(15, 118, 110, 0.08), transparent 26%),
+        linear-gradient(160deg, #fbf9f5 0%, #f5f1ea 45%, #efe9df 100%);
+    }
+
+    .grain, .scrim, .vignette { position: absolute; inset: 0; pointer-events: none; }
+
+    .grain {
+      opacity: 0.035;
+      background-image:
+        radial-gradient(rgba(28,29,38,0.5) 0.6px, transparent 0.6px),
+        radial-gradient(rgba(28,29,38,0.28) 0.6px, transparent 0.6px);
+      background-position: 0 0, 12px 12px;
+      background-size: 24px 24px;
+    }
+
+    .scrim {
+      background: linear-gradient(to bottom, rgba(239,233,223,0) 0%, rgba(239,233,223,0.12) 54%, rgba(239,233,223,0.55) 100%);
+    }
+
+    .vignette { box-shadow: inset 0 -220px 200px rgba(90, 65, 30, 0.06), inset 0 0 120px rgba(90, 65, 30, 0.04); }
+
+    .tag {
+      position: absolute; top: 74px; left: 72px; z-index: 2;
+      padding: 14px 24px; border-radius: 999px;
+      background: rgba(184, 114, 10, 0.10);
+      color: #8a5608;
+      font-size: 24px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+
+    .window-panel {
+      position: absolute; top: 88px; left: 104px; width: 872px; height: 620px;
+      padding: 46px 54px 54px; border-radius: 34px;
+      background: rgba(255,255,255,0.55);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 24px 60px rgba(90,65,30,0.10);
+      backdrop-filter: blur(6px);
+      z-index: 1;
+    }
+
+    .panel-topbar {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 34px;
+      color: rgba(28,29,38,0.5); font-size: 16px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+    }
+
+    .panel-dots { display: flex; gap: 10px; align-items: center; }
+    .panel-dots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(28,29,38,0.16); }
+    .panel-label { color: rgba(138, 86, 8, 0.75); font-size: 14px; letter-spacing: 1.8px; }
+
+    .keyword-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .keyword-chip {
+      height: 230px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 14px 30px rgba(90,65,30,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+      padding: 0 34px;
+    }
+
+    .keyword-chip.accent-amber { box-shadow: inset 4px 0 0 #b8720a, 0 14px 30px rgba(90,65,30,0.08), 0 0 0 1px rgba(0,0,0,0.04); }
+    .keyword-chip.accent-teal  { box-shadow: inset 4px 0 0 #0f766e, 0 14px 30px rgba(90,65,30,0.08), 0 0 0 1px rgba(0,0,0,0.04); }
+
+    .kw-label {
+      font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(28,29,38,0.42); font-weight: 700; margin-bottom: 10px;
+    }
+
+    .kw-text {
+      font-family: 'Oswald', 'Arial Narrow', sans-serif;
+      font-size: 34px; font-weight: 600; color: #1c1d26; line-height: 1.05;
+    }
+
+    .hero-divider {
+      position: absolute; left: 50%; bottom: 455px; transform: translateX(-50%); z-index: 2;
+      display: flex; align-items: center; gap: 18px; color: rgba(28,29,38,0.5);
+    }
+    .hero-divider::before, .hero-divider::after { content: ''; width: 184px; height: 1px; background: rgba(28,29,38,0.16); }
+    .hero-divider span { font-size: 28px; font-weight: 700; letter-spacing: 1px; }
+
+    .content { position: absolute; left: 104px; right: 104px; bottom: 210px; z-index: 2; }
+
+    .title {
+      max-width: 872px; margin-bottom: 18px; color: #1c1d26;
+      font-family: 'Oswald', 'Arial Narrow', sans-serif; font-size: 68px; font-weight: 600;
+      line-height: 1.02; letter-spacing: -1px; text-transform: uppercase; text-wrap: balance;
+      overflow-wrap: break-word;
+    }
+
+    .subtitle { max-width: 872px; color: rgba(28,29,38,0.68); font-size: 27px; line-height: 1.4; font-weight: 500; text-wrap: pretty; }
+
+    .footer {
+      position: absolute; left: 104px; right: 104px; bottom: 58px; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .watermark { color: rgba(28,29,38,0.55); font-size: 22px; font-weight: 500; letter-spacing: 0.3px; }
+
+    .swipe-wrap { display: flex; align-items: center; gap: 16px; color: rgba(28,29,38,0.75); font-size: 20px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .swipe-wrap::before { content: ''; width: 84px; height: 2px; background: #0f766e; border-radius: 999px; }
+
+    .pager { display: flex; gap: 10px; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,0.15); }
+    .dot.active { background: #1c1d26; }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="grain"></div>
+    <div class="scrim"></div>
+    <div class="vignette"></div>
+
+    <div class="tag">{{TAG}}</div>
+
+    <div class="window-panel">
+      <div class="panel-topbar">
+        <div class="panel-dots"><span></span><span></span><span></span></div>
+        <div class="panel-label">4 Key Terms</div>
+      </div>
+      <div class="keyword-grid">
+        <div class="keyword-chip accent-amber"><div class="kw-label">Term 01</div><div class="kw-text">{{KEYWORD_1}}</div></div>
+        <div class="keyword-chip accent-teal"><div class="kw-label">Term 02</div><div class="kw-text">{{KEYWORD_2}}</div></div>
+        <div class="keyword-chip accent-teal"><div class="kw-label">Term 03</div><div class="kw-text">{{KEYWORD_3}}</div></div>
+        <div class="keyword-chip accent-amber"><div class="kw-label">Term 04</div><div class="kw-text">{{KEYWORD_4}}</div></div>
+      </div>
+    </div>
+
+    <div class="hero-divider"><span>&bull;</span></div>
+
+    <div class="content">
+      <div class="title">{{TITLE}}</div>
+      <div class="subtitle">{{SUBTITLE}}</div>
+    </div>
+
+    <div class="footer">
+      <div class="watermark">{{ACCOUNT_WATERMARK}}</div>
+      <div class="swipe-wrap">Swipe for more</div>
+      <div class="pager">
+        <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var title = document.querySelector('.title');
+      if (!title) return;
+      var maxHeight = 190; // keeps title within .content without pushing into subtitle/footer
+      var minFontSize = 42;
+      var fontSize = 68;
+      title.style.fontSize = fontSize + 'px';
+      while (title.scrollHeight > maxHeight && fontSize > minFontSize) {
+        fontSize -= 2;
+        title.style.fontSize = fontSize + 'px';
+      }
+    })();
+  </script>
+</body>
+</html>

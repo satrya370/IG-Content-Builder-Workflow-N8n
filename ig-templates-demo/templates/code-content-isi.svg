@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: code-content-isi | 1080×1350 | Editorial dark technical breakdown -->
+<!-- PLACEHOLDERS: STEP_NUM, SLIDE_LABEL, SUBTITLE, EXPLANATION, TOTAL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <radialGradient id="codeIsiGlowA" cx="14%" cy="14%" r="24%">
+      <stop offset="0%" stop-color="#ffc666" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#788fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="codeIsiGlowB" cx="88%" cy="88%" r="30%">
+      <stop offset="0%" stop-color="#41ceb7" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#7746ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="codeIsiBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0e1527"/>
+      <stop offset="48%" stop-color="#0b1324"/>
+      <stop offset="100%" stop-color="#09101e"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1080" height="1350" fill="url(#codeIsiBg)"/>
+  <rect width="1080" height="1350" fill="url(#codeIsiGlowA)"/>
+  <rect width="1080" height="1350" fill="url(#codeIsiGlowB)"/>
+
+  <rect x="72" y="74" width="280" height="62" rx="31" fill="#4c488d" fill-opacity="0.86"/>
+  <text x="212" y="113" fill="#e7e9ff" font-family="Inter,Arial,sans-serif" font-size="26" font-weight="700" letter-spacing="2" text-anchor="middle">{{SLIDE_LABEL}}</text>
+
+  <text x="72" y="230" fill="rgba(240,242,255,0.92)" font-family="Oswald,Arial Narrow,Arial,sans-serif" font-size="42" font-weight="500">{{STEP_NUM}} / {{TOTAL}}</text>
+  <text x="72" y="355" fill="#ffffff" font-family="Oswald,Arial Narrow,Arial,sans-serif" font-size="86" font-weight="600" letter-spacing="-1.2">{{SUBTITLE}}</text>
+
+  <text x="72" y="468" fill="rgba(233,235,245,0.88)" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="500">{{EXPLANATION}}</text>
+
+  <rect x="72" y="968" width="936" height="190" rx="18" fill="#474388" fill-opacity="0.5"/>
+  <rect x="72" y="968" width="4" height="190" rx="2" fill="#aab5ff"/>
+  <text x="106" y="1012" fill="rgba(196,202,240,0.9)" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="2">SAVE THIS ANGLE</text>
+  <text x="106" y="1066" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="700">This is the kind of technical edge that feels expensive until an open version quietly gets good enough.</text>
+  <text x="106" y="1122" fill="rgba(213,218,244,0.88)" font-family="Oswald,Arial Narrow,Arial,sans-serif" font-size="24" letter-spacing="1">{{SLIDE_LABEL}}</text>
+
+  <line x1="72" y1="1266" x2="1008" y2="1266" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="72" y="1288" fill="rgba(235,238,248,0.7)" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="500">{{HANDLE}}</text>
+  <g transform="translate(900 1279)">
+    <circle cx="0" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="18" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="36" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="54" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="72" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="90" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="108" cy="0" r="5" fill="rgba(255,255,255,0.18)"/>
+  </g>
+</svg>

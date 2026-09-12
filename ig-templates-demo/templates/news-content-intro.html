@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      background: #0b0f1a;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .slide {
+      position: relative;
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      background: #0b0f1a;
+    }
+
+    .bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(1.03) contrast(1.02);
+    }
+
+    .gradient-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(to bottom,
+        rgba(11, 15, 26, 0) 0%,
+        rgba(11, 15, 26, 0) 18%,
+        rgba(11, 15, 26, 0.25) 34%,
+        rgba(11, 15, 26, 0.55) 48%,
+        rgba(11, 15, 26, 0.82) 60%,
+        rgba(11, 15, 26, 0.96) 72%,
+        rgba(11, 15, 26, 1) 84%);
+    }
+
+    .accent-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      z-index: 20;
+      background: linear-gradient(to bottom, #0a7fd1 0%, #0a4e97 52%, #07376f 100%);
+    }
+
+    .top-avatar {
+      position: absolute;
+      top: 36px;
+      left: 50%;
+      z-index: 12;
+      transform: translateX(-50%);
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.88);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+      object-fit: cover;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .top-handle {
+      position: absolute;
+      top: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 12;
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.82);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .tag-row {
+      position: absolute;
+      top: 66px;
+      left: 86px;
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1187d7;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px rgba(17, 135, 215, 0.12);
+    }
+
+    .tag-label {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1187d7;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .text-area {
+      position: absolute;
+      left: 64px;
+      right: 64px;
+      bottom: 84px;
+      z-index: 12;
+    }
+
+    .swipe-hint {
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.30);
+      letter-spacing: 1.5px;
+      margin-bottom: 22px;
+    }
+
+    .title {
+      font-size: 78px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.08;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+      text-wrap: balance;
+    }
+
+    .divider {
+      width: 56px;
+      height: 4px;
+      border-radius: 999px;
+      background: #1187d7;
+      margin-bottom: 26px;
+    }
+
+    .subtitle {
+      font-size: 22px;
+      line-height: 1.55;
+      font-weight: 500;
+      color: rgba(255,255,255,0.68);
+      text-wrap: pretty;
+      margin-bottom: 36px;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .handle-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mini-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 2px solid #1187d7;
+      object-fit: cover;
+      background: rgba(255,255,255,0.16);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.20);
+    }
+
+    .handle {
+      font-size: 22px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.64);
+    }
+
+    .swipe-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 135, 215, 0.76);
+      color: #18a0f4;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      background: rgba(7, 26, 52, 0.38);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <img class="bg-image" src="{{IMAGE_URL}}" alt="background image">
+    <div class="gradient-scrim"></div>
+    <div class="accent-bar"></div>
+
+    <img class="top-avatar" src="{{AVATAR_URL}}" alt="creator avatar">
+    <div class="top-handle">{{HANDLE}}</div>
+
+    <div class="tag-row">
+      <div class="tag-dot"></div>
+      <div class="tag-label">{{TAG}}</div>
+    </div>
+
+    <div class="text-area">
+      <div class="swipe-hint">Swipe to read →</div>
+      <div class="title">{{TITLE}}</div>
+      <div class="divider"></div>
+      <div class="subtitle">{{SUBTITLE}}</div>
+
+      <div class="footer">
+        <div class="swipe-cta">Swipe →</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

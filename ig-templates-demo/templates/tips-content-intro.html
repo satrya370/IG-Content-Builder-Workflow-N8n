@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1350px; overflow: hidden; background: #09111d; }
+
+    .slide {
+      position: relative;
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      padding: 90px;
+      background:
+        radial-gradient(circle at 20% 14%, rgba(54, 111, 171, 0.12), transparent 28%),
+        radial-gradient(circle at 82% 12%, rgba(121, 61, 193, 0.12), transparent 24%),
+        radial-gradient(circle at 75% 75%, rgba(11, 151, 176, 0.08), transparent 26%),
+        linear-gradient(180deg, #0b1320 0%, #09111c 55%, #070d16 100%);
+      display: flex;
+      flex-direction: column;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .grain,
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .grain {
+      opacity: 0.05;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.85) 0.6px, transparent 0.6px),
+        radial-gradient(rgba(255,255,255,0.28) 0.6px, transparent 0.6px);
+      background-position: 0 0, 11px 11px;
+      background-size: 22px 22px;
+    }
+
+    .vignette {
+      box-shadow: inset 0 -180px 220px rgba(0, 0, 0, 0.24), inset 0 0 140px rgba(0,0,0,0.12);
+    }
+
+    .top-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topic-tag {
+      font-size: 19px;
+      font-weight: 700;
+      color: #49a4ff;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .watermark {
+      font-size: 22px;
+      color: rgba(255,255,255,0.72);
+      font-weight: 500;
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hook-word {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 160px;
+      font-weight: 900;
+      color: #f6f8fd;
+      line-height: 0.9;
+      letter-spacing: -5px;
+      margin-bottom: 0;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow-wrap: break-word;
+    }
+
+    .accent-bar {
+      width: 120px;
+      height: 10px;
+      background: #49a4ff;
+      margin: 30px 0 36px 0;
+      border-radius: 999px;
+      box-shadow: 0 0 24px rgba(73, 164, 255, 0.22);
+    }
+
+    .title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 46px;
+      font-weight: 700;
+      color: #f6f8fd;
+      line-height: 1.25;
+      max-width: 820px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      font-size: 28px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.64);
+      margin-top: 32px;
+      line-height: 1.5;
+      max-width: 720px;
+    }
+
+    .bottom-line {
+      position: absolute;
+      bottom: 90px;
+      left: 90px;
+      right: 90px;
+      z-index: 2;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 28px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .swipe-hint {
+      font-size: 22px;
+      color: rgba(255,255,255,0.52);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="grain"></div>
+    <div class="vignette"></div>
+
+    <div class="top-bar">
+      <span class="topic-tag">{{TAG}}</span>
+      <span class="watermark">{{ACCOUNT_WATERMARK}}</span>
+    </div>
+
+    <div class="main-content">
+      <div class="hook-word">{{HOOK}}</div>
+      <div class="accent-bar"></div>
+      <div class="title">{{TITLE}}</div>
+      <div class="subtitle">{{SUBTITLE}}</div>
+    </div>
+
+    <div class="bottom-line">
+      <span class="swipe-hint">Swipe to read -&gt;</span>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var hook = document.querySelector('.hook-word');
+      if (!hook) return;
+      var maxWidth = 900; // slide width 1080 minus 90px padding on each side
+      var minFontSize = 64;
+      var fontSize = 160;
+      hook.style.fontSize = fontSize + 'px';
+      while (hook.scrollWidth > maxWidth && fontSize > minFontSize) {
+        fontSize -= 4;
+        hook.style.fontSize = fontSize + 'px';
+      }
+      if (hook.scrollWidth > maxWidth) {
+        hook.style.whiteSpace = 'normal';
+      }
+    })();
+  </script>
+</body>
+</html>

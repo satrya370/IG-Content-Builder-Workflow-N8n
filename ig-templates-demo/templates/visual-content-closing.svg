@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: visual-content-closing | 1080×1350 | Clean dark text closing -->
+<!-- PLACEHOLDERS: AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <radialGradient id="visualClosingGlowA" cx="20%" cy="14%" r="28%">
+      <stop offset="0%" stop-color="#366fab" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#366fab" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="visualClosingGlowB" cx="84%" cy="14%" r="24%">
+      <stop offset="0%" stop-color="#793dc1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#793dc1" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="visualClosingBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1320"/>
+      <stop offset="55%" stop-color="#09111c"/>
+      <stop offset="100%" stop-color="#070d16"/>
+    </linearGradient>
+    <clipPath id="visualClosingAvatarClip"><circle cx="540" cy="1044" r="40"/></clipPath>
+  </defs>
+
+  <rect width="1080" height="1350" fill="url(#visualClosingBg)"/>
+  <rect width="1080" height="1350" fill="url(#visualClosingGlowA)"/>
+  <rect width="1080" height="1350" fill="url(#visualClosingGlowB)"/>
+
+  <text x="540" y="248" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2" fill="rgba(155,92,255,0.9)" text-anchor="middle">SAVE THIS WORKFLOW</text>
+  <text x="540" y="430" font-family="Inter,Arial Black,sans-serif" font-size="108" font-weight="900" letter-spacing="-4" fill="#ffffff" text-anchor="middle">FOLLOW.</text>
+  <rect x="465" y="456" width="150" height="6" rx="3" fill="#9b5cff"/>
+
+  <text x="540" y="590" font-family="Inter,Arial,sans-serif" font-size="32" fill="rgba(255,255,255,0.62)" text-anchor="middle">Like and save this if you want more GitHub repos, Claude Code workflows, and practical AI engineering breakdowns.</text>
+  <text x="540" y="684" font-family="Inter,Arial,sans-serif" font-size="28" fill="rgba(155,92,255,0.88)" text-anchor="middle">The right repo can change how your coding agent thinks, not just what it types.</text>
+
+  <image href="{{AVATAR_URL}}" x="500" y="1004" width="80" height="80" clip-path="url(#visualClosingAvatarClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="540" cy="1044" r="40" fill="none" stroke="rgba(155,92,255,0.55)" stroke-width="2"/>
+  <text x="540" y="1132" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700" fill="rgba(255,255,255,0.82)" text-anchor="middle">{{HANDLE}}</text>
+  <text x="540" y="1182" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="700" fill="#9b5cff" letter-spacing="2" text-anchor="middle">FOLLOW ON INSTAGRAM</text>
+</svg>

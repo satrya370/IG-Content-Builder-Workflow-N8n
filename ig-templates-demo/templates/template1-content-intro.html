@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 1080px; height: 1350px; margin: 0; overflow: hidden; }
+    body { background: #ececec; font-family: Arial, Helvetica, sans-serif; }
+    .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: #fff; color: #2b292d; }
+    .topbar { position: absolute; top: 11.2%; right: 11%; left: 11.1%; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+    .brand { display: flex; align-items: center; gap: 1.2cqw; }
+    .brand-mark { position: relative; width: 3.15cqw; height: 3.15cqw; flex: 0 0 3.15cqw; border-radius: 50%; background: #ff4c55; }
+    .eye { position: absolute; top: .93cqw; width: .46cqw; height: .46cqw; border-radius: 50%; background: #fff; }
+    .eye-left { left: .74cqw; }
+    .eye-right { right: .74cqw; }
+    .smile { position: absolute; left: .74cqw; bottom: .74cqw; width: 1.67cqw; height: .83cqw; border-bottom: .37cqw solid #fff; border-radius: 0 0 1.67cqw 1.67cqw; }
+    .brand-name { font-size: 3.7cqw; font-weight: 800; letter-spacing: -.13cqw; line-height: 1; }
+    .account-label { margin-top: .37cqw; font-size: 2.69cqw; font-weight: 400; letter-spacing: .49cqw; white-space: nowrap; }
+    .content { position: absolute; top: 29.8%; left: 11%; width: 76.9%; z-index: 2; }
+    .eyebrow { margin: 0 0 3.24cqw; color: #727174; font-size: 2.78cqw; font-weight: 400; letter-spacing: .2cqw; text-transform: uppercase; }
+    h1 { margin: 0; font-size: 8.24cqw; font-weight: 800; line-height: .99; letter-spacing: -.41cqw; }
+    .slide-count { margin: 1.94cqw 0 0; color: #727174; font-size: 2.78cqw; line-height: 1; }
+    .hashtag { position: absolute; left: 11%; bottom: 11%; z-index: 2; margin: 0; color: #727174; font-size: 2.87cqw; letter-spacing: .02cqw; }
+    .accent-pattern { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .accent-pattern i { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); border-radius: 52% 48% 46% 54% / 68% 66% 34% 32%; background: #ff4c55; transform: rotate(var(--r)); }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><span class="eye eye-left"></span><span class="eye eye-right"></span><span class="smile"></span></span>
+        <span class="brand-name">youami</span>
+      </div>
+      <div class="account-label">{{ACCOUNT_WATERMARK}}</div>
+    </header>
+    <section class="content">
+      <p class="eyebrow">{{TAG}}</p>
+      <h1>{{TITLE}}</h1>
+      <p class="slide-count">1 of 7</p>
+    </section>
+    <p class="hashtag"># better every day</p>
+    <div class="accent-pattern" aria-hidden="true">
+      <i style="--x:70.5%;--y:89.4%;--w:2.1%;--h:5.4%;--r:-21deg"></i><i style="--x:73.7%;--y:88.6%;--w:2%;--h:4%;--r:-16deg"></i><i style="--x:76.6%;--y:93.6%;--w:2.6%;--h:2.7%;--r:19deg"></i><i style="--x:79.9%;--y:90.7%;--w:2%;--h:7.2%;--r:19deg"></i><i style="--x:82.1%;--y:88.3%;--w:1.1%;--h:2%;--r:10deg"></i><i style="--x:84.2%;--y:90.5%;--w:1.8%;--h:6.9%;--r:9deg"></i><i style="--x:87.7%;--y:85.2%;--w:1.5%;--h:9.1%;--r:7deg"></i><i style="--x:90.3%;--y:84.2%;--w:1.7%;--h:8.5%;--r:-7deg"></i><i style="--x:93.4%;--y:83.9%;--w:1.9%;--h:8.2%;--r:1deg"></i><i style="--x:97.7%;--y:83.3%;--w:1.7%;--h:9.8%;--r:18deg"></i><i style="--x:101.5%;--y:84.4%;--w:1.9%;--h:10.5%;--r:-2deg"></i><i style="--x:104.4%;--y:84.7%;--w:2%;--h:9.6%;--r:-8deg"></i>
+      <i style="--x:64.5%;--y:95.3%;--w:2.4%;--h:1.8%;--r:28deg"></i><i style="--x:67.8%;--y:96.4%;--w:2.9%;--h:3.1%;--r:-12deg"></i><i style="--x:71.4%;--y:98.5%;--w:1.8%;--h:1.5%;--r:20deg"></i><i style="--x:74.5%;--y:96.6%;--w:1.7%;--h:6.3%;--r:24deg"></i><i style="--x:78.3%;--y:97.8%;--w:2.2%;--h:3.4%;--r:36deg"></i><i style="--x:81.6%;--y:101.4%;--w:1.8%;--h:5.2%;--r:23deg"></i><i style="--x:84.4%;--y:98.9%;--w:2.2%;--h:7.9%;--r:16deg"></i><i style="--x:88.1%;--y:97%;--w:1.9%;--h:9.3%;--r:12deg"></i><i style="--x:91.9%;--y:94.7%;--w:1.9%;--h:10.4%;--r:7deg"></i><i style="--x:95.7%;--y:95.5%;--w:1.8%;--h:8.5%;--r:-4deg"></i><i style="--x:99.5%;--y:95.3%;--w:1.9%;--h:9.1%;--r:-12deg"></i><i style="--x:103.2%;--y:97.6%;--w:1.7%;--h:6.3%;--r:-17deg"></i><i style="--x:106.1%;--y:97.2%;--w:2.8%;--h:2.3%;--r:-16deg"></i>
+      <i style="--x:67.2%;--y:101.2%;--w:2%;--h:1.7%;--r:-14deg"></i><i style="--x:69.5%;--y:102%;--w:1.6%;--h:1.8%;--r:25deg"></i><i style="--x:72.4%;--y:101.8%;--w:1.6%;--h:1.7%;--r:12deg"></i><i style="--x:75.2%;--y:103.4%;--w:2%;--h:3.8%;--r:29deg"></i><i style="--x:78.2%;--y:105.2%;--w:1.6%;--h:2.7%;--r:34deg"></i><i style="--x:82.4%;--y:104.7%;--w:1.7%;--h:2.8%;--r:20deg"></i><i style="--x:86.5%;--y:105.7%;--w:2.3%;--h:1.7%;--r:9deg"></i><i style="--x:90.6%;--y:106.6%;--w:3%;--h:1.6%;--r:4deg"></i><i style="--x:94.9%;--y:106.8%;--w:1.9%;--h:1.5%;--r:0deg"></i><i style="--x:99%;--y:106.2%;--w:2.1%;--h:1.8%;--r:-7deg"></i><i style="--x:103.4%;--y:105.7%;--w:2.3%;--h:2%;--r:-8deg"></i>
+      <i style="--x:81.2%;--y:74.4%;--w:1.5%;--h:3.9%;--r:-10deg"></i><i style="--x:87%;--y:66.5%;--w:2%;--h:11.7%;--r:-14deg"></i><i style="--x:91.1%;--y:62.9%;--w:2.2%;--h:13.4%;--r:-17deg"></i><i style="--x:95.5%;--y:64.1%;--w:2.2%;--h:7.8%;--r:8deg"></i><i style="--x:99.6%;--y:58.4%;--w:1.9%;--h:8.7%;--r:25deg"></i><i style="--x:103.7%;--y:54.6%;--w:1.9%;--h:4.3%;--r:24deg"></i><i style="--x:107%;--y:53.8%;--w:1.8%;--h:3.4%;--r:25deg"></i><i style="--x:104.7%;--y:62.7%;--w:2.2%;--h:8.6%;--r:20deg"></i><i style="--x:107.8%;--y:69.8%;--w:2.5%;--h:4.7%;--r:22deg"></i><i style="--x:101.8%;--y:70.2%;--w:2%;--h:9%;--r:17deg"></i><i style="--x:96.5%;--y:76.6%;--w:1.6%;--h:4%;--r:8deg"></i><i style="--x:103%;--y:76.5%;--w:1.5%;--h:5.6%;--r:0deg"></i><i style="--x:105.8%;--y:78.5%;--w:1.7%;--h:3.2%;--r:-10deg"></i>
+    </div>
+  </div>
+</body>
+</html>

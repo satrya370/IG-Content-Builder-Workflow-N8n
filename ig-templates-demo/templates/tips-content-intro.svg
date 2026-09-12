@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE: tips-content-intro | 1080×1350 | Dark editorial, red #e63946 -->
+<!-- PLACEHOLDERS: HOOK, TITLE, SUBTITLE, TAG, TOTAL, AVATAR_URL, HANDLE -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <clipPath id="tips-intro-avatarClip">
+      <circle cx="958" cy="125" r="34"/>
+    </clipPath>
+  </defs>
+
+  <g id="tips-BG">
+    <rect x="0" y="0" width="1080" height="1350" fill="#111111"/>
+  </g>
+
+  <g id="tips-TopBar">
+    <text id="tips-Tag"
+          x="90" y="114"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" font-weight="600" fill="#e63946" letter-spacing="3">{{TAG}}</text>
+
+    <g id="tips-AvatarGroup">
+      <image id="tips-Avatar"
+             href="{{AVATAR_URL}}"
+             x="924" y="91" width="68" height="68"
+             clip-path="url(#tips-intro-avatarClip)"
+             preserveAspectRatio="xMidYMid slice"/>
+      <circle cx="958" cy="125" r="34" fill="none" stroke="#444444" stroke-width="2"/>
+      <text id="tips-Handle"
+            x="905" y="132"
+            font-family="Inter,Arial,sans-serif"
+            font-size="22" font-weight="500" fill="#aaaaaa"
+            text-anchor="end">{{HANDLE}}</text>
+    </g>
+  </g>
+
+  <text id="tips-Hook"
+        x="82" y="440"
+        font-family="Playfair Display,Georgia,serif"
+        font-size="220" font-weight="900" fill="#f0f0f0"
+        letter-spacing="-8">{{HOOK}}</text>
+
+  <rect id="tips-AccentBar" x="90" y="472" width="120" height="12" fill="#e63946"/>
+
+  <text id="tips-Title"
+        x="90" y="578"
+        font-family="Playfair Display,Georgia,serif"
+        font-size="58" font-weight="700" fill="#f0f0f0" letter-spacing="-1">{{TITLE}}</text>
+
+  <text id="tips-Subtitle"
+        x="90" y="660"
+        font-family="Inter,Arial,sans-serif"
+        font-size="28" fill="#888888">{{SUBTITLE}}</text>
+
+  <g id="tips-BottomLine">
+    <line id="tips-BorderLine" x1="90" y1="1262" x2="990" y2="1262"
+          stroke="#333333" stroke-width="2"/>
+    <text id="tips-SwipeHint"
+          x="90" y="1300"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" fill="#555555">Swipe to read →</text>
+    <text id="tips-SlideCount"
+          x="990" y="1300"
+          font-family="Inter,Arial,sans-serif"
+          font-size="22" fill="#555555" text-anchor="end">1 / {{TOTAL}}</text>
+  </g>
+</svg>

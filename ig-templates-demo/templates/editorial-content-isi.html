@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            width: 1080px; height: 1350px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8F9FA;
+            color: #1A1A1A;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100%; height: 100%;
+            padding: 100px;
+            display: flex; flex-direction: column;
+            position: relative;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 100%);
+        }
+
+        .bg-decoration {
+            position: absolute; top: -150px; right: -150px; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%; z-index: 0;
+        }
+
+        .ghost-num {
+            position: absolute;
+            top: 40px; right: 60px;
+            z-index: 0;
+            font-size: 320px;
+            font-weight: 800;
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(201, 162, 39, 0.16);
+        }
+
+        .header { z-index: 1; margin-bottom: 56px; }
+
+        .icon-badge {
+            width: 74px; height: 74px;
+            border-radius: 50%;
+            border: 1.6px solid #E6D6B3;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .subtitle {
+            font-size: 24px; font-weight: 600; letter-spacing: 3.5px; text-transform: uppercase;
+            color: #C9A227; margin-bottom: 18px;
+        }
+
+        .title {
+            font-size: 66px; font-weight: 800; line-height: 1.12;
+            color: #111111; margin-bottom: 28px;
+            text-wrap: pretty;
+        }
+
+        .description {
+            font-size: 29px; font-weight: 400; line-height: 1.58;
+            color: #444444; max-width: 88%;
+            text-wrap: pretty;
+        }
+
+        .chapter-rule {
+            z-index: 1;
+            margin-top: auto;
+            display: flex; align-items: center; gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .chapter-rule .line { flex: 1; height: 1.6px; background: #E2D9C4; }
+
+        .chapter-rule .label {
+            font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            color: #C9A227; white-space: nowrap;
+        }
+
+        .footer {
+            z-index: 1;
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 2px solid #EEEEEE; padding-top: 30px;
+        }
+
+        .username { font-size: 28px; font-weight: 600; color: #111111; }
+
+        .pagination {
+            font-size: 26px; font-weight: 500; color: #888888;
+            background-color: #EEEEEE; padding: 8px 20px; border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="bg-decoration"></div>
+        <div class="ghost-num">{{STEP_NUM}}</div>
+
+        <div class="header">
+            <div class="icon-badge">
+                <svg width="34" height="34" viewBox="0 0 42 42" fill="none">
+                    <path d="M13 8h11l6 6v18a2 2 0 01-2 2H13a2 2 0 01-2-2V10a2 2 0 012-2z" stroke="#C9A227" stroke-width="1.6"/>
+                    <path d="M24 8v6h6" stroke="#C9A227" stroke-width="1.6"/>
+                    <path d="M15 21h10M15 26h10M15 31h6" stroke="#C9A227" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="subtitle">{{TAG}}</div>
+            <h1 class="title">{{TITLE}}</h1>
+            <p class="description">{{EXPLANATION}}</p>
+        </div>
+
+        <div class="chapter-rule">
+            <div class="line"></div>
+            <div class="label">Point {{STEP_NUM}} of {{TOTAL}}</div>
+            <div class="line"></div>
+        </div>
+
+        <div class="footer">
+            <div class="username">{{ACCOUNT_WATERMARK}}</div>
+            <div class="pagination">{{STEP_NUM}}/{{TOTAL}}</div>
+        </div>
+    </div>
+</body>
+</html>
