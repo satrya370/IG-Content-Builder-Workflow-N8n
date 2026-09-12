@@ -40,10 +40,13 @@ const renderLogs = [];
 let successfulSlides = 0;
 let failedSlides = 0;
 
-const browser = await puppeteer.launch({
-  headless: 'new',
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-});
+const browserWSEndpoint = process.env.CHROMIUM_WS_ENDPOINT;
+const browser = browserWSEndpoint
+  ? await puppeteer.connect({ browserWSEndpoint })
+  : await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
 const page = await browser.newPage();
 await page.setViewport({ width: 1080, height: 1350, deviceScaleFactor: 1 });
