@@ -1,0 +1,3056 @@
+{
+  "name": "ig Content Builder For Demo",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TuezG43j45nXBrL-KRq_n-srMZyw_832YBvszmLveuo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "pending"
+            }
+          ]
+        },
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "id": "7a5aa0f5-4d8b-4952-98d9-8b0715de6081",
+      "name": "Load Plan from Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        496,
+        336
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "let cronRun = null;\ntry {\n  cronRun = $('Code: Set Cron Run Context').first().json;\n} catch (error) {}\n\nconst runSource = cronRun?.runSource === 'cron' ? 'cron' : 'manual';\nconst runSlot = runSource === 'cron' ? cronRun.runSlot : null;\nconst today = runSource === 'cron'\n  ? cronRun.today\n  : DateTime.now().setZone('Asia/Makassar').toISODate();\n\nlet _cc = {};\ntry { _cc = $('Load Master Context').first().json; } catch(e) {}\nlet _editorial = _cc.editorial_scope || {};\n\nlet form = {};\ntry {\n  const formItems = $('Form Trigger - Manual Run').all();\n  if (formItems.length > 0) form = formItems[0].json || {};\n} catch(e) { form = {}; }\n\nlet planRows = [];\ntry { planRows = $('Load Plan from Sheets').all().map(i => i.json); } catch (error) {}\nlet historyRows = [];\ntry { historyRows = $('Load Content History').all().map(i => i.json); } catch (error) {}\nconst parseArr = (str) => typeof str === 'string' ? str.split(',').map(s => s.trim()).filter(Boolean) : (Array.isArray(str) ? str : []);\n\nconst account_context = (form.account_context || '').trim();\nlet form_context = null;\n\nif (account_context) {\n  try {\n    form_context = JSON.parse(account_context);\n  } catch(e) {\n    const parsed = {};\n    account_context.split('\\n').forEach(line => {\n      const m = line.match(/^([\\w][\\w\\s]*?)\\s*[:\\-]\\s*(.+)$/);\n      if (m) parsed[m[1].trim().toLowerCase().replace(/\\s+/g,'_')] = m[2].trim();\n    });\n    form_context = {\n      batch_id: parsed.batch_id || 'batch_001',\n      account_handle: parsed.handle || parsed.account_handle || '',\n      niche: parsed.niche || account_context.substring(0, 100),\n      target_audience: parsed.audience || parsed.target_audience || 'tech enthusiasts',\n      target_description: parsed.description || parsed.target_description || account_context,\n      sub_topics: parsed.sub_topics || parsed.topics || 'AI tools,Python,automation,LLM,productivity',\n      forbidden_topics: parsed.forbidden_topics || parsed.forbidden || '',\n      formats: parsed.formats || 'carousel',\n      tone: parsed.tone || 'educational,casual,data-driven',\n      language: parsed.language || 'EN',\n      forbidden_phrases: parsed.forbidden_phrases || 'game changer,revolutionary,unleash',\n      research_focus: parsed.research || parsed.research_focus || 'data-backed insights, real tools, 2025-2026 only',\n      anti_generic_notes: parsed.anti_generic_notes || 'avoid vague claims, need specific stats or tool names',\n      allowed_templates: parsed.templates || parsed.allowed_templates || 'DAHMOhYIffY',\n      total_days: parsed.total_days || '7',\n      notify_time: parsed.notify_time || '07:00',\n      start_date: parsed.start_date || new Date().toISOString().split('T')[0],\n    };\n  }\n}\n\nconst mc = form_context || {};\nconst rawWatermarkHandle = String(form.watermark_handle || mc.account_handle || '').trim();\nconst normalizedWatermarkHandle = rawWatermarkHandle.replace(/^@+/, '').trim();\nconst accountWatermark = normalizedWatermarkHandle ? '@' + normalizedWatermarkHandle : '';\nconst followCta = accountWatermark ? 'Follow ' + accountWatermark + ' for more.' : 'Follow my account';\nconst guardAudience = String($json.guard_audience || '').trim();\nconst language_override = (form.language && form.language !== 'Auto') ? form.language : '';\n\nconst masterContext = {\n  batch_id: mc.batch_id || 'batch_001',\n  account: { username: normalizedWatermarkHandle, handle: accountWatermark, niche: mc.niche || (_editorial.audience ? _editorial.audience : 'Tech & AI') },\n  audience: { target: guardAudience || mc.target_audience || 'a general audience', description: mc.target_description || guardAudience || (_editorial.audience || '') },\n  scope: { sub_topics: parseArr(mc.sub_topics).length > 0 ? parseArr(mc.sub_topics) : ['facts','examples','trade-offs','common mistakes'], forbidden_topics: parseArr(mc.forbidden_topics), formats: parseArr(mc.formats) },\n  voice: { tone: parseArr(mc.tone).length > 0 ? parseArr(mc.tone) : ['clear','practical','accessible'], language: language_override || mc.language || 'EN', forbidden_phrases: parseArr(mc.forbidden_phrases) },\n  research: { focus: mc.research_focus || 'primary sources, evidence, real examples', anti_generic_notes: mc.anti_generic_notes || 'avoid vague claims, need specific facts or practical outcomes', year_min: 2025 },\n  output: { allowed_templates: parseArr(mc.allowed_templates), total_days: parseInt(mc.total_days) || 7, notify_time: mc.notify_time || '07:00', start_date: mc.start_date || '' },\n};\n\nconst topic_override = (form.topic_override || '').trim();\nconst topic_detail = (form.topic_detail || '').trim();\nconst keywords_raw = (form.keywords || '').trim();\nconst parsedSubtopics = [];\nlet parsedKeywords = keywords_raw\n  ? keywords_raw.split(',').map(s => s.trim()).filter(Boolean)\n  : [];\nlet researchSources = [];\n\nconst normalizeSlot = (value) => Number.parseInt(String(value), 10);\nconst validTemplates = new Set(['tips-content', 'code-content', 'visual-content', 'template1-content', 'insight-content', 'editorial-content', 'momentum-content']);\n\nlet status;\nlet activePlan = null;\nlet planClaim = null;\nlet mpId = null;\nlet runOptions = {};\n\nfunction slugify(value) {\n  return String(value || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '') || 'general';\n}\n\nfunction buildMpId(date, slotPart, topic) {\n  const todayStr = String(date || new Date().toISOString().slice(0, 10)).replace(/[^0-9]/g, '').slice(0, 8);\n  let mpId = 'mp-' + todayStr + '-' + slotPart + '-' + slugify(topic);\n  if (mpId.length > 96) {\n    let hash = 0;\n    for (let i = 0; i < mpId.length; i++) hash = (hash * 31 + mpId.charCodeAt(i)) >>> 0;\n    mpId = mpId.slice(0, 87) + '-' + hash.toString(36).slice(0, 8);\n  }\n  return mpId;\n}\n\nif (runSource === 'cron') {\n  const matchingPlans = planRows.filter((row) =>\n    row.date === today &&\n    normalizeSlot(row.slot) === runSlot &&\n    row.status === 'pending' &&\n    row.plan_id &&\n    row.topic &&\n    validTemplates.has(row.template)\n  );\n\n  if (matchingPlans.length > 1) {\n    console.warn(`Duplicate content plan slot: ${today} slot ${runSlot} has ${matchingPlans.length} pending rows; using the first.`);\n  }\n\n  const scheduledPlan = matchingPlans[0];\n\n  if (!scheduledPlan) {\n    return [{ json: { runSource, runSlot, status: 'NO_PLAN', today, masterContext, content_context: _cc, editorial_scope: _editorial } }];\n  }\n\n  activePlan = { ...scheduledPlan };\n  parsedKeywords = parseArr(scheduledPlan.keywords);\n  try {\n    researchSources = typeof scheduledPlan.sources === 'string'\n      ? JSON.parse(scheduledPlan.sources || '[]')\n      : (Array.isArray(scheduledPlan.sources) ? scheduledPlan.sources : []);\n  } catch (error) {\n    researchSources = [];\n  }\n  const slotPart = 's' + runSlot;\n  mpId = buildMpId(today, slotPart, scheduledPlan.topic);\n  planClaim = { plan_id: scheduledPlan.plan_id, mpId, date: today, slot: runSlot, duplicateSlotCount: matchingPlans.length };\n  status = 'HAS_PLAN';\n\n  runOptions = {\n    template: scheduledPlan.template || 'tips-content',\n    research_lens: scheduledPlan.research_lens || '',\n    content_mode: 'Auto',\n    slide_count: 'Auto',\n    image_handling: 'Auto',\n    image_url: '',\n    test_mode: 'Live run',\n    account_watermark: accountWatermark,\n    follow_cta: followCta,\n  };\n} else {\n  if (!topic_override) {\n    return [{ json: { runSource, status: 'NO_MANUAL_TOPIC', today, masterContext, content_context: _cc, editorial_scope: _editorial } }];\n  }\n\n  activePlan = { date: today, topic: topic_override, angle: '', format: 'carousel', status: 'pending', research_lens: '' };\n  mpId = buildMpId(today, 'manual', topic_override);\n  planClaim = null;\n  status = 'HAS_PLAN';\n\n  runOptions = {\n    template: (form.template && form.template !== 'Auto') ? form.template : '',\n    research_lens: (form.research_lens && form.research_lens !== 'Auto') ? form.research_lens : '',\n    content_mode: (form.content_mode && form.content_mode !== 'Auto') ? form.content_mode : 'Auto',\n    slide_count: form.slide_count || 'Auto',\n    image_handling: form.image_handling || 'Auto',\n    image_url: (form.image_url || '').trim(),\n    test_mode: form.test_mode || 'Live run',\n    account_watermark: accountWatermark,\n    follow_cta: followCta,\n    email: (form.email || '').trim(),\n    language: language_override,\n  };\n}\n\nconst recent = historyRows.filter(r => r.status === 'success').slice(-7).map(r => ({\n  date: r.date || '', topic: r.chosen_topic || '', angle: r.angle || '',\n  key_stat: r.key_stat || '', headline: r.headline || '', content_type: r.content_type || ''\n}));\n\nconst LENSES = ['Deep dive / focused analysis','Statistics & surprising numbers','Case study / real example','Common mistakes people make','Contrast: what people think vs reality','Latest data & trends this year','Direct comparison (A vs B)','Actionable data-based tips'];\nconst dayOfYear = Math.floor((new Date(today) - new Date(new Date(today).getFullYear(), 0, 0)) / 86400000);\nconst research_lens_override = (form.research_lens && form.research_lens !== 'Auto') ? form.research_lens : null;\nconst todayLens = research_lens_override || activePlan.research_lens || LENSES[dayOfYear % LENSES.length];\n\nconst months = ['January','February','March','April','May','June','July','August','September','October','November','December'];\nconst weekdays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];\nconst dObj = new Date(today + 'T12:00:00');\nconst dateDisplay = weekdays[dObj.getDay()] + ', ' + months[dObj.getMonth()] + ' ' + dObj.getDate() + ', ' + dObj.getFullYear();\n\nconst research_constraints = (form.research_constraints || '').trim();\nconst content_mode_override = (form.content_mode && form.content_mode !== 'Auto') ? form.content_mode : null;\nconst slide_count_pref = form.slide_count || 'Auto';\nconst image_handling = form.image_handling || 'Auto';\nconst image_url = (form.image_url || '').trim();\nconst test_mode = form.test_mode || 'Live run';\n\nconst image_source = image_url ? 'user_url' : 'none';\n\nreturn [{ json: {\n  activePlan, masterContext, recent_content: recent, todayLens, today, dateDisplay,\n  _retry_count: 0, research_constraints, content_mode_override,\n  slide_count_pref, image_handling, image_url, image_source, test_mode,\n  topic_detail, parsedSubtopics, parsedKeywords, researchSources,\n  account_watermark: accountWatermark, follow_cta: followCta,\n  content_context: _cc, editorial_scope: _editorial,\n  runSource, runSlot, status, mpId, planClaim, runOptions,\n} }];\n"
+      },
+      "id": "3d13da60-a63b-4d00-83fc-9196fec185bf",
+      "name": "Build Daily Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        304
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1d1b4811-aa98-488c-8442-aa46853e21c4",
+      "name": "Telegram - Morning Brief",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        160
+      ],
+      "webhookId": "a4059032-723b-443a-b375-25668a9331a6",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "id": "dbd1380f-15cb-45b9-bfa3-11b0be045427",
+      "name": "Wait - User Response",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        80
+      ],
+      "webhookId": "948b8271-8fba-4b27-8242-f70095609a3f",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = ($input.first().json.message?.text || '').trim().toLowerCase();\nconst brief = $('Parse Brief').first().json;\n\nlet action = 'proceed';\nlet extra_context = null;\nlet image_url = brief.image_url || null;\nlet new_topic = null;\n\nif (text === 'skip') {\n  action = 'skip';\n} else if (text.startsWith('ganti:')) {\n  action = 'proceed';\n  new_topic = text.replace('ganti:', '').trim();\n} else if (text.startsWith('tambah:')) {\n  action = 'proceed';\n  extra_context = text.replace('tambah:', '').trim();\n} else if (text.startsWith('img:')) {\n  action = 'proceed';\n  image_url = text.replace('img:', '').trim();\n}\n\n// Determine image_source: Telegram img: overrides form setting\nconst image_handling = brief.image_handling || 'Auto';\nlet image_source;\nif (image_url && text.startsWith('img:')) {\n  image_source = 'user_url';\n} else if (image_handling === 'Generate with AI' || (image_handling === 'Auto' && brief.image_needed)) {\n  image_source = 'ai_generate';\n} else if (image_handling === 'Use custom URL' && image_url) {\n  image_source = 'user_url';\n} else {\n  image_source = 'none';\n}\n\nreturn [{\n  json: {\n    ...brief,\n    action,\n    extra_context,\n    image_url,\n    image_source,\n    new_topic: new_topic || brief.activePlan?.topic,\n    should_skip: action === 'skip',\n  }\n}];"
+      },
+      "id": "e90e5f30-6312-4643-8a1c-aa695058c302",
+      "name": "Parse Telegram Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "cs1",
+              "leftValue": "={{ $json.should_skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "085a6d7f-cd5e-4b61-af33-733eeb898197",
+      "name": "If - Skip Today?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json._researchBody }}",
+        "options": {
+          "timeout": 120000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "779cb228-1298-4778-bd85-15cd452afc17",
+      "name": "AI Research (MiMo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1264,
+        400
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_SET_IN_N8N",
+          "name": "OpenRouter Authorization - IG Content Builder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate render log from Code: Read Render Log\nconst renderLog = $input.first().json;\nconst errors = [];\n\nif (!renderLog.mpId) errors.push('missing mpId');\nif (renderLog.totalSlides !== 7) errors.push('expected 7 slides, got ' + renderLog.totalSlides);\nif (renderLog.successfulSlides !== renderLog.totalSlides) errors.push('successfulSlides (' + renderLog.successfulSlides + ') !== totalSlides (' + renderLog.totalSlides + ')');\nif (!Array.isArray(renderLog.pngPaths) || renderLog.pngPaths.length !== 7) errors.push('expected 7 PNG paths, got ' + (renderLog.pngPaths ? renderLog.pngPaths.length : 0));\nif (Number(renderLog.failedSlides || 0) > 0) errors.push(renderLog.failedSlides + ' slide(s) failed to render');\n\nif (errors.length > 0) {\n  return [{ json: { status: 'INVALID', errors, ...renderLog } }];\n}\nreturn [{ json: { status: 'OK', errors: [], ...renderLog } }];"
+      },
+      "id": "dc328b69-8f72-48d8-87a6-d18f8eeb5e4f",
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        384
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "cv1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "INVALID",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "0f535d68-d22b-4902-b81a-fb88e00a0bfd",
+      "name": "If - Valid Content?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2960,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1TuezG43j45nXBrL-KRq_n-srMZyw_832YBvszmLveuo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "demo_content_log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "batch_id": "={{ $('Build Daily Context').first().json.masterContext.batch_id }}",
+            "date": "={{ $json.today }}",
+            "chosen_topic": "={{ $json.chosen_topic }}",
+            "content_mode": "={{ $json.content_mode }}",
+            "slides_used": "={{ $json.slides_used }}",
+            "canva_design_id": "={{ $json.canva_design_id }}",
+            "canva_url": "={{ $json.canva_design_url }}",
+            "instagram_caption": "={{ ($json.instagram_caption || '').slice(0, 200) }}",
+            "hashtags": "={{ ($json.hashtags || []).join(' ') }}",
+            "image_source": "={{ $json.image_source }}",
+            "key_stat": "={{ $json.key_stat }}",
+            "angle": "={{ $json.final_angle }}",
+            "status": "={{ ($('Build Daily Context').first().json.test_mode || '') === 'Test' || $json.canva_skipped ? 'test' : 'success' }}",
+            "generated_at": "={{ $now.toISO() }}",
+            "mpId": "={{ $json.mpId }}"
+          },
+          "matchingColumns": [
+            "mpId"
+          ],
+          "schema": [
+            {
+              "id": "mpId",
+              "displayName": "mpId",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "batch_id",
+              "displayName": "batch_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "chosen_topic",
+              "displayName": "chosen_topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "content_mode",
+              "displayName": "content_mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "slides_used",
+              "displayName": "slides_used",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "canva_design_id",
+              "displayName": "canva_design_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "canva_url",
+              "displayName": "canva_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "instagram_caption",
+              "displayName": "instagram_caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "image_source",
+              "displayName": "image_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "key_stat",
+              "displayName": "key_stat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "angle",
+              "displayName": "angle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "generated_at",
+              "displayName": "generated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "9cfe36e4-2e20-46d1-966e-307aaaf06951",
+      "name": "Log to Content Log (Sheets)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        3664,
+        416
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "8675308460",
+        "text": "=\"✅ Demo run succeeded — mpId: \" + $json.mpId + \" · sent to: \" + ($('Build Daily Context').first().json.runOptions.email || '(no email)')",
+        "additionalFields": {},
+        "resource": "chat"
+      },
+      "id": "c8178a4c-268c-41f3-8d3c-3ea93b484d6b",
+      "name": "Telegram - Send Result",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3952,
+        608
+      ],
+      "webhookId": "cce961f1-bf53-49c5-b495-63717b815a9c"
+    },
+    {
+      "parameters": {},
+      "id": "8339960b-068a-4050-9f22-ee653b753e87",
+      "name": "NoOp - End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const upstream = $input.first().json || {};\nconst fs = require('fs');\nconst path = 'D:/Agent_workspace/ig-templates-demo/content-context.json';\nconst contentContext = JSON.parse(fs.readFileSync(path, 'utf8'));\nconst editorialScope = contentContext.editorial_scope || {};\n\nreturn [{\n  json: {\n    ...upstream,\n    content_context: contentContext,\n    editorial_scope: editorialScope,\n    context_loaded: true,\n    context_source: 'content-context.json',\n  },\n}];"
+      },
+      "id": "34b16a0e-89ac-4f56-8376-40ef7c829ff1",
+      "name": "Load Master Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        384,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nlet previousRetryCount = input._retry_count;\nif (previousRetryCount == null) {\n  try { previousRetryCount = $('Build AI Planner Body').first().json._retry_count; } catch (error) {}\n}\nconst retryCount = Number(previousRetryCount || 0) + 1;\n\nif (retryCount > 2) {\n    const ctx = $('Build Daily Context').first().json;\n  const failurePayload = { mpId: ctx.mpId || '', planId: ctx.planClaim?.plan_id || '', runSlot: ctx.runSlot, stage: 'planner', errors: input.errors || [], retryCount };\n  throw new Error('Content generation failed after ' + retryCount + ' attempts. ' + JSON.stringify(failurePayload));\n}\n\n// Pass original research data back to AI Planner for retry\nconst research = $('Parse Research').first().json;\nreturn [{ json: { ...research, _retry_count: retryCount } }];"
+      },
+      "id": "c94216d2-ef15-485b-b199-d266815e2af2",
+      "name": "Check Retry Limit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3104,
+        624
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "path": "cfb2ae26-8b9b-4e7a-8adc-d99818683a92",
+        "formTitle": "IG Content - Manual Run",
+        "formDescription": "Trigger content generation manually for today",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "account_context",
+              "fieldType": "textarea",
+              "placeholder": "First-run setup: describe account (handle, niche, audience, tone, forbidden topics) or paste JSON. Leave empty if master_context sheet already has data."
+            },
+            {
+              "fieldLabel": "watermark_handle",
+              "placeholder": "Optional account name for watermark and closing. Example: @myaccount"
+            },
+            {
+              "fieldLabel": "topic_override",
+              "placeholder": "Short title for this content (max 1 sentence). Example: 'GLM 5.2: Budget Frontier AI'"
+            },
+            {
+              "fieldLabel": "topic_detail",
+              "fieldType": "textarea",
+              "placeholder": "Detailed description: what specific aspects to cover. Will be parsed into subtopics. Example: 'GLM 5.2 benchmarks, IndexShare architecture, community hype, MIT license'"
+            },
+            {
+              "fieldLabel": "keywords",
+              "placeholder": "Optional. Comma-separated mandatory terms. Auto-extracted from topic_detail if empty."
+            },
+            {
+              "fieldLabel": "template",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto"
+                  },
+                  {
+                    "option": "tips-content"
+                  },
+                  {
+                    "option": "code-content"
+                  },
+                  {
+                    "option": "visual-content"
+                  },
+                  {
+                    "option": "template1-content"
+                  },
+                  {
+                    "option": "editorial-content"
+                  },
+                  {
+                    "option": "momentum-content"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "research_constraints",
+              "fieldType": "textarea",
+              "placeholder": "Research boundaries ONLY: what to focus/exclude/prioritize. NOT the topic itself. Example: 'Focus on independent benchmarks. Exclude Reddit. Include HN reactions.'"
+            },
+            {
+              "fieldLabel": "research_lens",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto"
+                  },
+                  {
+                    "option": "Deep dive / focused analysis"
+                  },
+                  {
+                    "option": "Statistics & surprising numbers"
+                  },
+                  {
+                    "option": "Case study / real example"
+                  },
+                  {
+                    "option": "Common mistakes people make"
+                  },
+                  {
+                    "option": "Contrast: what people think vs reality"
+                  },
+                  {
+                    "option": "Latest data & trends this year"
+                  },
+                  {
+                    "option": "Direct comparison (A vs B)"
+                  },
+                  {
+                    "option": "Actionable data-based tips"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "language",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto"
+                  },
+                  {
+                    "option": "English"
+                  },
+                  {
+                    "option": "Indonesia"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "content_mode",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto"
+                  },
+                  {
+                    "option": "Force INFO"
+                  },
+                  {
+                    "option": "Force REC"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "slide_count",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto"
+                  },
+                  {
+                    "option": "Min 2-3"
+                  },
+                  {
+                    "option": "Max 4-5"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "image_handling",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Auto"
+                  },
+                  {
+                    "option": "Generate with AI"
+                  },
+                  {
+                    "option": "Use custom URL"
+                  },
+                  {
+                    "option": "Skip"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "image_url",
+              "placeholder": "Paste image URL (only if image_handling = Use custom URL)"
+            },
+            {
+              "fieldLabel": "email",
+              "fieldType": "email",
+              "placeholder": "Where should we send your result? (required)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "owner_access_code",
+              "fieldType": "password",
+              "placeholder": "Owner only (leave empty for public use)"
+            },
+            {
+              "fieldLabel": "test_mode",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Live run"
+                  },
+                  {
+                    "option": "Test"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e60a7fe0-cf77-48f8-ad31-e7487867adc5",
+      "name": "Form Trigger - Manual Run",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2,
+      "position": [
+        160,
+        496
+      ],
+      "webhookId": "cfb2ae26-8b9b-4e7a-8adc-d99818683a92"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TuezG43j45nXBrL-KRq_n-srMZyw_832YBvszmLveuo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "demo_content_log",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "success"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ba368f39-a514-4ee1-8993-cd8b2cdb20ca",
+      "name": "Load Content History",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        608,
+        512
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.koboillm.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json._briefBody }}",
+        "options": {
+          "timeout": 60000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "1160b57d-e856-4de2-a9b8-885378e10632",
+      "name": "AI Brief Generator (MiMo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1056,
+        624
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_SET_IN_N8N",
+          "name": "KobiLLM Authorization - IG Content Builder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nfunction slugify(value) {\n  return String(value || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '') || 'general';\n}\nfunction shortHash(value) {\n  let hash = 0;\n  for (let i = 0; i < value.length; i++) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;\n  return hash.toString(36).slice(0, 8);\n}\nfunction shortenMpId(value, maxLength = 96) {\n  if (value.length <= maxLength) return value;\n  const hash = shortHash(value);\n  const head = value.slice(0, maxLength - hash.length - 1).replace(/-+$/g, '');\n  return `${head}-${hash}`;\n}\nfunction buildMpId(date, topic) {\n  const yyyymmdd = String(date || new Date().toISOString().slice(0, 10)).replace(/[^0-9]/g, '').slice(0, 8) || new Date().toISOString().slice(0, 10).replace(/-/g, '');\n  return shortenMpId(`mp-${yyyymmdd}-${slugify(topic)}`);\n}\nfunction normalizeMpId(mpId, fallbackDate) {\n  if (!mpId) return buildMpId(fallbackDate, 'general');\n  const sanitized = String(mpId).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');\n  const ensuredPrefix = sanitized.startsWith('mp-') ? sanitized : `mp-${sanitized || 'general'}`;\n  return shortenMpId(ensuredPrefix);\n}\nconst upstreamMpId = $('Build AI Brief Body').first().json.mpId;\nconst finishReason = $json.choices?.[0]?.finish_reason;\nif (finishReason === 'length') {\n  throw new Error('AI Brief Generator response was truncated (finish_reason=length) before it finished writing JSON — not a repairable parse error. Increase max_tokens or lower reasoning_effort on the Build AI Brief Body node.');\n}\nconst response = $json.choices?.[0]?.message?.content || JSON.stringify($json);\nfunction repairJSON(str) {\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/```json\\s*/gi, '').replace(/```\\s*$/g, '').trim();\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:/g, '$1\"$2\"');\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/,\\s*([}\\]])/g, '$1');\n  try { return JSON.parse(str); } catch(e) {}\n  const m = str.match(/\\{[\\s\\S]*\\}/);\n  if (m) {\n    str = m[0].replace(/([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:/g, '$1\"$2\"').replace(/,\\s*([}\\]])/g, '$1');\n    try { return JSON.parse(str); } catch(e) {}\n  }\n  throw new Error('Failed to parse AI response as JSON: ' + response.substring(0, 500));\n}\nlet parsed = typeof response === 'string' ? repairJSON(response) : response;\nif (parsed && typeof parsed.final_schema === 'string') parsed = repairJSON(parsed.final_schema);\nelse if (parsed && typeof parsed.final === 'string') parsed = repairJSON(parsed.final);\nconst validTemplates = new Set(['tips-content', 'code-content', 'visual-content', 'template1-content', 'insight-content', 'editorial-content', 'momentum-content']);\nparsed.mpId = normalizeMpId(parsed.mpId || upstreamMpId);\nif (!parsed.mpId) throw new Error('Parse Brief: missing mpId');\nif (!validTemplates.has(parsed.template)) throw new Error('Parse Brief: invalid or missing template: ' + parsed.template);\nif (!Array.isArray(parsed.researchTopics) || parsed.researchTopics.length === 0) throw new Error('Parse Brief: missing or empty researchTopics array');\nif (parsed.imagePlan && parsed.imagePlan.introLogoSlots) {\n  delete parsed.imagePlan.introLogoSlots;\n}\nif (parsed.imagePlan && typeof parsed.imagePlan === 'object' && Object.keys(parsed.imagePlan).length === 0) {\n  parsed.imagePlan = {};\n}\nconst dir = 'D:/Agent_workspace/ig-templates-demo/content-plans/brief-plans';\nconst outPath = dir + '/' + parsed.mpId + '-brief.json';\nfs.mkdirSync(dir, { recursive: true });\nfs.writeFileSync(outPath, JSON.stringify(parsed, null, 2), 'utf8');\nconst ctx = $('Build Daily Context').first().json;\nreturn [{ json: { \n  briefPlan: parsed, \n  mpId: parsed.mpId, \n  template: parsed.template || '', \n  imagePlan: parsed.imagePlan || null,\n  runSource: ctx.runSource,\n  runSlot: ctx.runSlot,\n  planClaim: ctx.planClaim,\n  runOptions: ctx.runOptions,\n  _retry_count: ctx._retry_count || 0,\n  activePlan: ctx.activePlan,\n  today: ctx.today\n} }];"
+      },
+      "id": "f7fba047-b084-4884-b519-1414f30fb11a",
+      "name": "Parse Brief",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        800
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nfunction slugify(value) {\n  return String(value || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '') || 'general';\n}\nfunction shortHash(value) {\n  let hash = 0;\n  for (let i = 0; i < value.length; i++) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;\n  return hash.toString(36).slice(0, 8);\n}\nfunction shortenMpId(value, maxLength = 96) {\n  if (value.length <= maxLength) return value;\n  const hash = shortHash(value);\n  const head = value.slice(0, maxLength - hash.length - 1).replace(/-+$/g, '');\n  return `${head}-${hash}`;\n}\nfunction buildMpId(date, topic) {\n  const yyyymmdd = String(date || new Date().toISOString().slice(0, 10)).replace(/[^0-9]/g, '').slice(0, 8) || new Date().toISOString().slice(0, 10).replace(/-/g, '');\n  return shortenMpId(`mp-${yyyymmdd}-${slugify(topic)}`);\n}\nfunction normalizeMpId(mpId, fallbackDate) {\n  if (!mpId) return buildMpId(fallbackDate, 'general');\n  const sanitized = String(mpId).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');\n  const ensuredPrefix = sanitized.startsWith('mp-') ? sanitized : `mp-${sanitized || 'general'}`;\n  return shortenMpId(ensuredPrefix);\n}\nconst mpId = $('Build AI Research Body').first().json.mpId;\nconst response = $json.choices?.[0]?.message?.content || JSON.stringify($json);\nfunction repairJSON(str) {\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/```json\\s*/gi, '').replace(/```\\s*$/g, '').trim();\n  str = str.replace(/(\\\"notes\\\"\\s*:\\s*\\\"[^\\\"\\n]*)\\\"\\],/g, '$1\\\",');\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:/g, '$1\"$2\"');\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/,\\s*([}\\]])/g, '$1');\n  try { return JSON.parse(str); } catch(e) {}\n  const m = str.match(/\\{[\\s\\S]*\\}/);\n  if (m) {\n    str = m[0].replace(/([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:/g, '$1\"$2\"').replace(/,\\s*([}\\]])/g, '$1');\n    try { return JSON.parse(str); } catch(e) {}\n  }\n  throw new Error('Failed to parse AI response as JSON: ' + response.substring(0, 500));\n}\nlet parsed;\nconst _choice = $json.choices?.[0] || {};\nconst _finishReason = _choice.finish_reason || '';\nconst _annotations = _choice.message?.annotations || [];\nif (_finishReason === 'content_filter' || (typeof response === 'string' && /high risk|content.?filter|was rejected/i.test(response))) {\n  const _citations = _annotations.filter(a => (a.type === 'url_citation' || a.type === 'citation') && a.url);\n  const _deduped = [];\n  const _seen = new Set();\n  for (const c of _citations) {\n    if (!_seen.has(c.url)) { _seen.add(c.url); _deduped.push(c); }\n  }\n  const _sources = _deduped.map((a, i) => ({\n    rank: i + 1,\n    url: a.url,\n    title: a.title || a.url,\n    siteName: a.site_name || a.siteName || '',\n    published: a.published || '',\n    keyPoints: a.summary ? [a.summary] : ['No summary available'],\n    relevanceScore: 70,\n    notes: 'Extracted from web search citation (content filter fallback)'\n  }));\n  if (_sources.length > 0) {\n    const _ctx = $('Build Daily Context').first().json;\n    const _topic = _ctx.activePlan?.topic || 'Content';\n    parsed = {\n      mpId: mpId,\n      template: _ctx.runOptions?.template || 'tips-content',\n      primaryFocus: _topic,\n      researchLens: _ctx.todayLens || '',\n      keywords: String(_topic).split(/\\s+/).slice(0, 5),\n      topics: [{ topic: _topic, primaryQuery: _topic, sources: _sources.slice(0, 9) }],\n      dataPoints: {},\n      _contentFilterFallback: true\n    };\n  } else {\n    throw new Error('Research rejected by content filter and no web search citations available for fallback');\n  }\n} else {\n  parsed = typeof response === 'string' ? repairJSON(response) : response;\n}\nconst briefPlan = $('Parse Brief').first().json.briefPlan || {};\nconst disallowedDomains = Array.isArray(briefPlan.disallowedDomains) ? briefPlan.disallowedDomains.map(domain => String(domain).toLowerCase()) : [];\nfunction isDisallowedUrl(url) {\n  try {\n    const hostname = new URL(String(url)).hostname.toLowerCase().replace(/^www\\\\./, '');\n    return disallowedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain));\n  } catch (e) {\n    return false;\n  }\n}\nfor (const topic of parsed.topics || []) {\n  topic.sources = (topic.sources || []).filter(source => !isDisallowedUrl(source.url));\n  topic.sources.forEach((source, index) => { source.rank = index + 1; });\n}\nparsed.topics = (parsed.topics || []).filter(t => Array.isArray(t.sources) && t.sources.length > 0);\nif (parsed.topics.length === 0) {\n  throw new Error('Parse Research: all topics have empty sources after disallowed-domain filter');\n}\nconst validTemplates = new Set(['tips-content', 'code-content', 'visual-content', 'template1-content', 'insight-content', 'editorial-content', 'momentum-content']);\nparsed.mpId = normalizeMpId(parsed.mpId || mpId);\nif (!parsed.mpId) throw new Error('Parse Research: missing mpId');\nif (!validTemplates.has(parsed.template)) throw new Error('Parse Research: invalid or missing template: ' + parsed.template);\nif (!Array.isArray(parsed.topics) || parsed.topics.length === 0) throw new Error('Parse Research: missing or empty topics array');\nfor (const topic of parsed.topics) {\n  if (!Array.isArray(topic.sources) || topic.sources.length === 0) {\n    throw new Error('Parse Research: topic missing sources: ' + (topic.topic || 'unknown'));\n  }\n  for (const source of topic.sources) {\n    if (!source.url || !source.title || !Array.isArray(source.keyPoints) || source.keyPoints.length === 0) {\n      throw new Error('Parse Research: source missing url, title, or keyPoints: ' + (source.title || 'unknown'));\n    }\n  }\n}\nconst dir = 'D:/Agent_workspace/ig-templates-demo/content-plans/research';\nconst outPath = dir + '/' + parsed.mpId + '-findings.json';\nfs.mkdirSync(dir, { recursive: true });\nfs.writeFileSync(outPath, JSON.stringify(parsed, null, 2), 'utf8');\nconst ctx = $('Build Daily Context').first().json;\nreturn [{ json: { \n  findings: parsed, \n  mpId: parsed.mpId, \n  template: parsed.template || '', \n  imagePlan: parsed.imagePlan || null,\n  runSource: ctx.runSource,\n  runSlot: ctx.runSlot,\n  planClaim: ctx.planClaim,\n  runOptions: ctx.runOptions,\n  _retry_count: ctx._retry_count || 0,\n  activePlan: ctx.activePlan,\n  today: ctx.today\n} }];"
+      },
+      "id": "7d12339b-88ab-457e-8951-15be801d2a60",
+      "name": "Parse Research",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        336
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json._plannerBody }}",
+        "options": {
+          "timeout": 180000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "2f8a566b-908e-4cd0-98c4-5d37a64275dd",
+      "name": "AI Planner (MiMo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1856,
+        416
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_SET_IN_N8N",
+          "name": "OpenRouter Authorization - IG Content Builder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nfunction slugify(value) {\n  return String(value || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '') || 'general';\n}\nfunction shortHash(value) {\n  let hash = 0;\n  for (let i = 0; i < value.length; i++) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;\n  return hash.toString(36).slice(0, 8);\n}\nfunction shortenMpId(value, maxLength = 96) {\n  if (value.length <= maxLength) return value;\n  const hash = shortHash(value);\n  const head = value.slice(0, maxLength - hash.length - 1).replace(/-+$/g, '');\n  return head + '-' + hash;\n}\nfunction buildMpId(date, topic) {\n  const yyyymmdd = String(date || new Date().toISOString().slice(0, 10)).replace(/[^0-9]/g, '').slice(0, 8) || new Date().toISOString().slice(0, 10).replace(/-/g, '');\n  return shortenMpId('mp-' + yyyymmdd + '-' + slugify(topic));\n}\nfunction normalizeMpId(mpId, fallbackDate) {\n  if (!mpId) return buildMpId(fallbackDate, 'general');\n  const sanitized = String(mpId).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');\n  const ensuredPrefix = sanitized.startsWith('mp-') ? sanitized : 'mp-' + (sanitized || 'general');\n  return shortenMpId(ensuredPrefix);\n}\nconst mpId = $('Build AI Planner Body').first().json.mpId;\nconst template = $('Build AI Planner Body').first().json.template;\nconst _plannerChoice = $json.choices?.[0] || {};\nconst _plannerFinishReason = _plannerChoice.finish_reason || '';\nconst _plannerUsage = $json.usage || {};\nif (_plannerFinishReason === 'length') {\n  throw new Error('Planner stopped due to finish_reason=length (output token limit hit). completion_tokens=' + (_plannerUsage.completion_tokens || 'unknown') + ', prompt_tokens=' + (_plannerUsage.prompt_tokens || 'unknown') + '. Reduce planner input or move heavy output fields (caption/hashtags) downstream.');\n}\nconst response = _plannerChoice.message?.content || JSON.stringify($json);\nfunction repairJSON(str) {\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/```json\\s*/gi, '').replace(/```\\s*$/g, '').trim();\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:/g, '$1\"$2\"');\n  try { return JSON.parse(str); } catch(e) {}\n  str = str.replace(/,\\s*([}\\]])/g, '$1');\n  try { return JSON.parse(str); } catch(e) {}\n  const m = str.match(/\\{[\\s\\S]*\\}/);\n  if (m) {\n    str = m[0].replace(/([{,]\\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*:/g, '$1\"$2\"').replace(/,\\s*([}\\]])/g, '$1');\n    try { return JSON.parse(str); } catch(e) {}\n  }\n  throw new Error('Failed to parse AI response as JSON: ' + response.substring(0, 500));\n}\n\nlet parsed = typeof response === 'string' ? repairJSON(response) : response;\nif (parsed && typeof parsed.final_schema === 'string') parsed = repairJSON(parsed.final_schema);\nelse if (parsed && typeof parsed.final === 'string') parsed = repairJSON(parsed.final);\nif (parsed && typeof parsed === 'object' && parsed.error) {\n  throw new Error('Planner returned error: ' + String(parsed.error));\n}\nparsed.mpId = normalizeMpId(parsed.mpId || mpId);\nif (!parsed.template) parsed.template = template;\n\nconst dailyContext = $('Build Daily Context').first().json;\nconst requestedImageUrl = String(dailyContext.runOptions?.image_url || '').trim();\nlet requestedImageMap = null;\ntry {\n  const parsedImageMap = JSON.parse(requestedImageUrl);\n  if (parsedImageMap && typeof parsedImageMap === 'object' && !Array.isArray(parsedImageMap)) {\n    requestedImageMap = {};\n    for (let i = 1; i <= 4; i++) {\n      const value = parsedImageMap['IMAGE_' + i + '_URL'] || parsedImageMap['image_' + i + '_url'] || '';\n      if (String(value).trim()) requestedImageMap['IMAGE_' + i + '_URL'] = String(value).trim();\n    }\n    if (Object.keys(requestedImageMap).length === 0) requestedImageMap = null;\n  }\n} catch(e) {}\n\nif (parsed.template === 'code-content') {\n  const intro = (parsed.slides || []).find(function(slide) { return slide.type === 'intro'; });\n  if (intro && intro.data) {\n    for (let i = 1; i <= 4; i++) delete intro.data['IMAGE_' + i + '_URL'];\n  }\n}\n\n// Image candidates are intentionally not consulted. User-supplied image_url is the only image source.\n\nconst imageFields = ['IMAGE_URL', 'IMAGE_3D_URL', 'IMAGE_1_URL', 'IMAGE_2_URL', 'IMAGE_3_URL', 'IMAGE_4_URL'];\nfor (const slide of parsed.slides || []) {\n  const data = slide.data || (slide.data = {});\n  for (const field of imageFields) delete data[field];\n\n  if (!requestedImageUrl) continue;\n  if (parsed.template === 'news-content' && (slide.type === 'intro' || slide.type === 'isi' || slide.type === 'closing')) {\n    data.IMAGE_URL = requestedImageUrl;\n  } else if (parsed.template === 'visual-content' && slide.type === 'intro') {\n    data.IMAGE_3D_URL = requestedImageUrl;\n  } else if (parsed.template === 'visual-content' && slide.type === 'isi') {\n    data.IMAGE_URL = requestedImageUrl;\n  } else if (parsed.template === 'code-content' && slide.type === 'intro') {\n    if (requestedImageMap) {\n      for (let i = 1; i <= 4; i++) {\n        const field = 'IMAGE_' + i + '_URL';\n        if (requestedImageMap[field]) data[field] = requestedImageMap[field];\n      }\n    } else {\n      data.IMAGE_1_URL = requestedImageUrl;\n    }\n  }\n}\n\nconst countWords = (value) => String(value || '').trim().split(' ').filter(Boolean).length;\nconst excludedWordCountKeys = new Set(['STEP_NUM', 'TOTAL']);\nconst contentWordCount = (parsed.slides || [])\n  .filter((slide) => slide.type !== 'closing')\n  .flatMap((slide) => Object.entries(slide.data || {}))\n  .filter(([key]) => !excludedWordCountKeys.has(key))\n  .reduce((total, [, value]) => total + countWords(value), 0);\nconst wordCountRanges = {\n  'code-content': { min: 160, max: 480 },\n  'tips-content': { min: 110, max: 480 },\n  'template1-content': { min: 105, max: 480 },\n  'insight-content': { min: 100, max: 480 },\n  'editorial-content': { min: 110, max: 480 },\n  'momentum-content': { min: 75, max: 480 },\n  'visual-content': { min: 150, max: 480 }\n};\nconst wcRange = wordCountRanges[parsed.template] || { min: 100, max: 480 };\nif (contentWordCount < wcRange.min || contentWordCount > wcRange.max) {\n  parsed.content_word_count_warning = 'Word count ' + contentWordCount + ' outside recommended range ' + wcRange.min + '-' + wcRange.max + ' for template ' + parsed.template + '. Plan saved anyway.';\n}\nparsed.content_word_count = contentWordCount;\nconst accountWatermark = String(dailyContext.account_watermark || '').trim();\nparsed.account_watermark = accountWatermark;\nparsed.follow_cta = accountWatermark ? 'Follow ' + accountWatermark + ' for more.' : 'Follow my account';\nparsed.createdAt = new Date().toISOString();\nconst dir = 'D:/Agent_workspace/ig-templates-demo/content-plans/slides';\nconst outPath = dir + '/' + parsed.mpId + '-plan.json';\nfs.mkdirSync(dir, { recursive: true });\nfs.writeFileSync(outPath, JSON.stringify(parsed, null, 2), 'utf8');\nconst validTemplates = new Set(['tips-content', 'code-content', 'visual-content', 'template1-content', 'insight-content', 'editorial-content', 'momentum-content']);\nif (!parsed.mpId) throw new Error('Parse Plan: missing mpId');\nif (!validTemplates.has(parsed.template)) throw new Error('Parse Plan: invalid or missing template: ' + parsed.template);\nif (!Array.isArray(parsed.slides) || parsed.slides.length === 0) throw new Error('Parse Plan: no slides in plan');\nconst ctx = $('Build Daily Context').first().json;\nreturn [{ json: { \n  ...parsed,\n  runSource: ctx.runSource,\n  runSlot: ctx.runSlot,\n  planClaim: ctx.planClaim,\n  runOptions: ctx.runOptions,\n  _retry_count: $json._retry_count || $('Build AI Planner Body').first().json._retry_count || 0,\n  activePlan: ctx.activePlan,\n  today: ctx.today\n} }];"
+      },
+      "id": "1711fef8-bfe0-4ebe-9d6d-1896112e4418",
+      "name": "Parse Plan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2016,
+        400
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const renderLog = $('Code: Read Render Log').first().json;\nconst plan = $('Parse Caption').first().json;\n\nconst mpId = renderLog.mpId || '';\nconst template = renderLog.template || '';\nconst successfulSlides = renderLog.successfulSlides || 0;\nconst totalSlides = renderLog.totalSlides || 0;\nconst renderPath = mpId ? ('D:/Agent_workspace/ig-templates-demo/Demo render/' + mpId + '/') : '';\nconst today = DateTime.now().setZone('Asia/Makassar').toISODate();\n\nconst instagram_caption = plan.instagram_caption || '';\nconst hashtags = Array.isArray(plan.hashtags) ? plan.hashtags : [];\nconst hashtagsStr = hashtags.join(' ');\n\nconst runSource = $('Build Daily Context').first().json.runSource;\n\nlet source_urls = [];\nlet researchDegraded = false;\ntry {\n  const researchJson = $('Parse Research').first().json;\n  const findings = researchJson.findings || {};\n  const allSources = (findings.topics || []).flatMap(function(t) { return t.sources || []; });\n  source_urls = allSources.map(function(s) { return s.url; }).filter(Boolean);\n  researchDegraded = !!findings._contentFilterFallback;\n} catch (e) {}\n\nconst telegram_text = [\n  '✅ Konten siap — ' + today,\n  '',\n  '📄 Template: ' + template,\n  '🎬 Render: ' + successfulSlides + '/' + totalSlides + ' slides',\n  mpId ? ('📁 Path: ' + renderPath) : '',\n  researchDegraded ? '⚠️ Research used content-filter fallback — verify facts manually before publishing.' : '',\n  '',\n  'mpId: ' + mpId\n].filter(Boolean).join('\\n').trim();\n\nreturn [{ json: {\n  mpId,\n  template,\n  successfulSlides,\n  totalSlides,\n  renderPath,\n  pngPaths: renderLog.pngPaths || [],\n  telegram_text,\n  today,\n  status: renderLog.status || 'OK',\n  slides_used: totalSlides,\n  content_mode: template,\n  instagram_caption,\n  hashtags,\n  hashtagsStr,\n  canva_design_url: '',\n  canva_design_id: '',\n  source_urls,\n  research_degraded: researchDegraded,\n  runSource,\n  chosen_topic: $('Build Daily Context').first().json.activePlan?.topic || '',\n  final_angle: $('Build Daily Context').first().json.activePlan?.angle || '',\n  pillar: $('Build Daily Context').first().json.activePlan?.pillar || '',\n  plan_id: $('Build Daily Context').first().json.planClaim?.plan_id || '',\n  key_stat: $('Parse Research').first().json.findings?.dataPoints?.key_stat || '',\n  image_source: $('Build Daily Context').first().json.runOptions?.image_handling || 'auto'\n} }];"
+      },
+      "id": "417f4526-7ffe-4bf6-84eb-d5be9edecd04",
+      "name": "Code: Build Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3376,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const briefPlan = $json.briefPlan || $json;\n\n// Get overrides from daily context\nlet todayLens = '';\nlet content_mode_override = null;\nlet researchConstraints = '';\nlet parsedKeywords = [];\ntry {\n  const ctx = $('Build Daily Context').first().json;\n  todayLens = ctx.todayLens || '';\n  content_mode_override = ctx.content_mode_override || null;\n  researchConstraints = ctx.research_constraints || '';\n  parsedKeywords = ctx.parsedKeywords || [];\n} catch(e) {}\n\nconst systemPrompt = `You are the Web Research Agent for the IG Content Building Pipeline.\nUse the web_search tool to find current, data-rich information. Use it actively for every topic.\nOutput ONLY valid JSON. No markdown fences. No explanation.\n\nIf research_lens is provided, apply these specific research behaviors per lens:\n\nLENS DEFINITIONS:\n- \"Deep dive / focused analysis\": Research the SPECIFIC topic in exhaustive depth. Do NOT broaden scope to comparisons or lists. Every source must be directly about the core subject. Find technical details, architecture explanations, expert opinions, and community discussions about THIS specific thing.\n- \"Statistics & surprising numbers\": Find 3+ concrete statistics, percentages, or counterintuitive data points. Lead every topic with a number. Sources must contain quantifiable metrics.\n- \"Case study / real example\": Find 1-2 real-world implementations or usage examples with named companies/projects. Prioritize case studies, post-mortems, and before/after comparisons over theoretical articles.\n- \"Common mistakes people make\": Identify 3-5 frequently made errors, misconceptions, or anti-patterns. Prioritize sources that discuss pitfalls, debugging stories, and \"lessons learned\".\n- \"Contrast: what people think vs reality\": Find claims/beliefs that are contradicted by data. Prioritize myth-busting, expectation vs reality, and \"unpopular opinion\" sources.\n- \"Latest data & trends this year\": Only accept sources from the current year. Find emerging patterns, new releases, and shifting landscapes. Reject anything older than 6 months.\n- \"Direct comparison (A vs B)\": Find head-to-head benchmark comparisons. HOWEVER: the comparison must be WITHIN the topic's scope — if the topic is about GLM 5.2, compare GLM 5.2 alternatives, do NOT reframe as a generic \"best AI models\" listicle.\n- \"Actionable data-based tips\": Find practical, step-by-step guidance backed by data. Each tip must include a \"why\" with evidence. Prioritize how-to guides, tutorials, and documentation.\nIf research_constraints is provided: treat these as HARD boundaries for your research — \"Focus on X\" → at least 60% of sources must be about X; \"Exclude Y\" → never query or cite Y; \"Prioritize Z sources\" → add Z domains to allowedDomains[]; \"Include community reactions\" → add dedicated queries for forums/social discussions.\nIf keywords[] is provided: each primaryQuery MUST contain at least one keyword. Treat keywords as mandatory inclusion criteria for source selection.\nIf source_hints[] is provided: use them as leads, open or search each relevant URL, verify that it directly supports the topic, and prefer primary sources. Never cite a hint that cannot be verified. Do not assume a hint is accurate merely because it came from the Pre-Planner.\nIf content_mode is provided: Force INFO = lean toward educational/data facts; Force REC = lean toward actionable tips and recommendations.\n\nFor each researchTopic in the brief plan:\n1. Search using primaryQuery. If fewer than 3 results, try one alternateQuery.\n2. Hard filter - skip sources that: are in disallowedDomains[], require login, are homepages/category pages, are ads or press releases.\n3. Score remaining sources (0-9 points):\n   - Recency: <90 days=2pts, <1yr=1pt, older=0pt\n   - Data richness: specific stats=+1pt, expert quote or study=+1pt\n   - Authority: domain in allowedDomains[]=2pts, .edu/.gov/.org=1pt, other=0pt\n   - Depth: >500 words relevant content=+1pt, concrete examples=+1pt\n   - Specificity: directly addresses query=1pt, generic=0pt\n4. Select top 3 by score. Extract 3-5 keyPoints (max 200 words, English).\n5. Skip content matching forbiddenAreas[].\n6. For each source, also extract image metadata: ogImage = the article's hero/og:image URL if present (else \"\"); readmeImages = array of raw image URLs from the tool's GitHub README or official docs (else []). Prefer raw.githubusercontent.com or cdn links over HTML pages.\n7. Generate a \"primaryFocus\" field: one sentence stating exactly what this content is about, based on the brief topic and your research. This will guide the Content Planner to keep all slides on-topic — be specific and unambiguous (e.g. \"GLM 5.2's benchmark performance, IndexShare architecture, and community reception as a budget frontier AI model\", NOT \"AI model comparison\").\n8. Echo all keywords (from input or auto-extracted) into the \"keywords\" array of your output.\n9. Echo the research_lens value you were given into the \"researchLens\" field of your output, so the Planner can use it for lens-aware slide generation.\n\nOutput schema:\n{\n  \"mpId\": \"<mpId>\",\n  \"template\": \"<template>\",\n  \"primaryFocus\": \"<one sentence stating exactly what this content is about, derived from the brief topic and research findings>\",\n  \"researchLens\": \"<echo the research_lens you were given — enables Planner lens-aware generation>\",\n  \"keywords\": [\"<echoed keywords for downstream Planner use>\"],\n  \"topics\": [\n    {\n      \"topic\": \"<topic name>\",\n      \"primaryQuery\": \"<query used>\",\n      \"sources\": [\n        {\n          \"rank\": 1,\n          \"url\": \"<url>\",\n          \"title\": \"<title>\",\n          \"siteName\": \"<site name>\",\n          \"published\": \"<date or year>\",\n          \"ogImage\": \"<article hero image URL if available, else empty string>\",\n          \"readmeImages\": [\"<raw GitHub README image URLs if this is a repo/tool, else empty array>\"],\n          \"keyPoints\": [\"<point1>\"],\n          \"relevanceScore\": 95,\n          \"notes\": \"<brief note>\"\n        }\n      ]\n    }\n  ],\n  \"dataPoints\": {}\n}`;\n\nconst userPayload = { briefPlan };\nif (Array.isArray(briefPlan.sourceHints) && briefPlan.sourceHints.length > 0) userPayload.source_hints = briefPlan.sourceHints;\nif (todayLens) userPayload.research_lens = todayLens;\nif (content_mode_override) userPayload.content_mode = content_mode_override;\nif (researchConstraints) userPayload.research_constraints = researchConstraints;\nconst researchKeywords = [...new Set([...(briefPlan.keywords || []), ...parsedKeywords])];\nif (researchKeywords.length > 0) userPayload.keywords = researchKeywords;\n\nconst body = {\n  model: 'xiaomi/mimo-v2.5',\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'BRIEF PLAN:\\n' + JSON.stringify(userPayload) }\n  ],\n  provider: {\n    order: ['xiaomi'],\n    allow_fallbacks: false\n  },\n  tools: [{\n    type: 'openrouter:web_search',\n    parameters: {\n      engine: 'parallel',\n      max_results: 5,\n      max_total_results: 25,\n      search_context_size: 'medium'\n    }\n  }],\n  max_tokens: 8000,\n  temperature: 0.3,\n  response_format: { type: 'json_object' }\n};\nreturn [{ json: { _researchBody: body, mpId: briefPlan.mpId, template: briefPlan.template } }];"
+      },
+      "id": "89d84652-bcf4-4e85-a32c-efb36c2ddfe7",
+      "name": "Build AI Research Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        416
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst findings = $json.findings || $json;\nconst mpId = $json.mpId || findings.mpId;\nconst template = $json.template || findings.template;\n\nconst contentContext = JSON.parse(fs.readFileSync('D:/Agent_workspace/ig-templates-demo/content-context.json', 'utf8'));\nconst templateDef = contentContext.templates && contentContext.templates[template] ? contentContext.templates[template] : {};\n\n// CP-2b: fields the renderer injects itself - Planner must never be asked to produce these\nconst EXCLUDED_ALWAYS = ['AVATAR_URL', 'HANDLE', 'TOTAL', 'IMAGE_1_URL', 'IMAGE_2_URL', 'IMAGE_3_URL', 'IMAGE_4_URL', 'IMAGE_URL', 'IMAGE_3D_URL'];\nfunction allowedKeys(placeholders) {\n  return Object.keys(placeholders || {}).filter(function(k) { return EXCLUDED_ALWAYS.indexOf(k) === -1; });\n}\nconst introPlaceholders = (templateDef.slides && templateDef.slides.intro && templateDef.slides.intro.placeholders) || {};\nconst isiPlaceholders = (templateDef.slides && templateDef.slides.isi && templateDef.slides.isi.placeholders) || {};\nconst allowedIntroKeys = allowedKeys(introPlaceholders);\nconst allowedIsiKeys = allowedKeys(isiPlaceholders);\nconst hasSingleExplanationField = allowedIsiKeys.indexOf('EXPLANATION') !== -1;\nconst explanationSpec = hasSingleExplanationField\n  ? '2-3 substantive sentences inside the single EXPLANATION field, max 300 characters total. Each sentence must add a distinct fact, number, or implication - no filler.'\n  : 'One substantive sentence in EXPLANATION_L1 and one in EXPLANATION_L2, max 300 characters each. Each sentence must add a distinct fact, mechanism, trade-off, or practical consequence; together they must justify the slide’s claim without filler.';\n\nconst WORD_COUNT_RANGES = {\n  'code-content': { min: 160, max: 480 },\n  'tips-content': { min: 110, max: 480 },\n  'template1-content': { min: 105, max: 480 },\n  'insight-content': { min: 100, max: 480 },\n  'editorial-content': { min: 110, max: 480 },\n  'momentum-content': { min: 75, max: 480 },\n  'visual-content': { min: 150, max: 480 }\n};\nconst wcr = WORD_COUNT_RANGES[template] || { min: 100, max: 480 };\n\nconst compactGuide = {\n  template: template,\n  display_name: templateDef.display_name || template,\n  purpose: templateDef.purpose || '',\n  slides: templateDef.slides || {},\n  image_plan_guidance: templateDef.image_plan_guidance || null,\n  allowedIntroKeys: allowedIntroKeys,\n  allowedIsiKeys: allowedIsiKeys,\n  explanationSpec: explanationSpec,\n  wordCountRange: wcr\n};\n\nconst compactFindings = {\n  mpId: findings.mpId || mpId,\n  template: findings.template || template,\n  primaryFocus: findings.primaryFocus || '',\n  researchLens: findings.researchLens || '',\n  keywords: Array.isArray(findings.keywords) ? findings.keywords.slice(0, 8) : [],\n  dataPoints: findings.dataPoints || {},\n  topics: Array.isArray(findings.topics) ? findings.topics.map(function(t) {\n    return {\n      topic: t.topic || '',\n      sources: Array.isArray(t.sources) ? t.sources.slice(0, 3).map(function(s) {\n        return {\n          url: s.url,\n          title: s.title,\n          keyPoints: Array.isArray(s.keyPoints) ? s.keyPoints.slice(0, 4) : []\n        };\n      }) : []\n    };\n  }) : []\n};\n\nlet langPref = '';\ntry { langPref = String(($('Build Daily Context').first().json.runOptions || {}).language || '').trim(); } catch (e) {}\nconst isIndonesian = /^(id|indonesia|bahasa|bahasa indonesia|bhs indonesia)$/i.test(langPref);\nconst languageInstruction = isIndonesian\n  ? 'All text values must be written in natural, fluent Bahasa Indonesia - the way a skilled native Indonesian copywriter would write, not a literal or robotic translation from English. Use idiomatic everyday phrasing, correct grammar, and keep the requested tone and hook/title guidance below (the sharp-angle principle applies in Indonesian too, not just in English). Keep brand names, tool names, and technical terms in their original form when there is no natural Indonesian equivalent (e.g. \"API\", \"GitHub\", \"machine learning\" may stay as-is).'\n  : 'All text values must be in English.';\n\nconst systemPrompt = `You are the Content Planner for the IG Content Builder.\nOutput ONLY valid JSON. No markdown fences. No explanation.\n\nTopic fidelity (CRITICAL):\n- Content MUST address the research primaryFocus directly.\n- The intro title MUST reference the SPECIFIC subject (e.g. \"GLM-5.2\", \"Docker Volumes\"), NOT a generic reframe.\n- At least 3 keywords from research must appear across slides.\n- If researchLens is set, align slide structure with the lens angle.\n\nRules:\n- Generate exactly 7 slides: 1 intro (s01) + 5 isi (s02-s06) + 1 closing (s07).\n- Use ONLY the keys listed in TEMPLATE GUIDE's allowedIntroKeys (for s01) and allowedIsiKeys (for s02-s06). Do not add any key outside these lists and do not omit any key from the list.\n- Never invent image URLs and never output any IMAGE_*_URL key - they are intentionally excluded from allowedIntroKeys/allowedIsiKeys and are injected later by a downstream step.\n- code-content isi: ANGLE_LABEL and ANGLE_NOTE are already part of allowedIsiKeys for this template - always fill them.\n- code-content intro: KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_4 must each be one short keyword/term (1-3 words) directly relevant to the topic - a tool, library, protocol, named entity, or key concept drawn from the research. Never a statistic or a generic word, and never duplicate a term across the four.\n- insight-content isi: QUOTE is the sharp claim/insight itself (apply Hook & Title Guidance below to it), SUPPORT is one sentence of elaboration or evidence, SOURCE is a short attribution (site name or \"per <source type>\"), not a full URL.\n- Closing slide: data{} must be {} (empty object).\n- Content word count target: TEMPLATE GUIDE wordCountRange (soft guideline; sharp content outside range is acceptable). Do not count STEP_NUM or TOTAL. Do not pad with filler; distribute substantive words across the intro and five isi slides.\n- ${languageInstruction}\n- Follow TEMPLATE GUIDE's explanationSpec exactly for sentence count and field usage in isi slides.\n- Hooks and titles must satisfy the \"Hook & Title Guidance\" section below.\n\nCharacter budgets (soft guideline - prioritize a sharp, specific sentence over hitting an exact count):\nHOOK=1 word ALL-CAPS | TAG=20 chars | TITLE=90 chars | TITLE_LINE1=18 chars | TITLE_LINE2=22 chars\nACCENT_LINE=44 chars | SUBTITLE=120 chars | SLIDE_LABEL=28 chars | EXPLANATION=300 chars\nEXPLANATION_L1=300 chars | EXPLANATION_L2=300 chars | ANGLE_LABEL=24 chars | ANGLE_NOTE=140 chars\n\nHook & Title Guidance (this is what makes or breaks engagement):\n- Avoid title/subtitle shapes like: \"What is X?\", \"Introduction to X\", \"Overview of X\", \"Understanding X\", \"Best practices for X\", \"Explore how...\", \"A guide to X\", \"Everything about X\", \"X Explained\". These are the default, under-thought shapes a model falls back to - if the research is rich, a sharper angle almost always exists. Only fall back to one of these shapes if the topic is genuinely introductory/definitional and no sharper angle fits the evidence - this should be rare.\n- Every intro should lead with a specific tension, number, or non-obvious claim pulled from dataPoints (or keyPoints if dataPoints is empty) - not a description of what the topic is.\n- Every isi TITLE/SUBTITLE should state the INSIGHT of that slide, not the section name.\n- Avoid opening isi EXPLANATION sentences with descriptive/definitional verbs like \"is\", \"provides\", \"offers\", \"allows\", \"helps\". Prefer verbs that show action or consequence - e.g. \"breaks\", \"forces\", \"cuts\", \"exposes\", \"hides\", \"blocks\" - even when describing the same fact. This is about tone, not meaning.\n- Use at least one concrete fact, number, or named entity from dataPoints (or keyPoints where dataPoints is empty) in the intro AND in at least 4 of the 5 isi slides.\n\nExamples (pattern varies - do not copy the sentence structure literally, the point is leading with a specific fact/tension instead of a topic description):\n\n1) visual-content - topic \"VS 2026 MCP trust validation\", dataPoint \"no reputation system for MCP servers\":\n   Weak:  TITLE \"What is MCP Trust Validation?\"\n   Sharp: TITLE \"Certificate ≠ Trustworthy\" / SUBTITLE \"VS 2026 checks certs, not reputation - here's the gap.\"\n\n2) code-content - topic \"OpenCLI\", keyPoint \"pins a specific Chrome version to avoid breaking changes via CDP\":\n   Weak:  TITLE \"Introduction to OpenCLI\"\n   Sharp: TITLE \"Your CLI Breaks When Chrome Updates\" / SUBTITLE \"OpenCLI pins a Chrome version so its CDP-based scraping survives the next browser release.\"\n\n3) tips-content - topic \"prompt caching\", dataPoint \"cached tokens billed at ~10% of input cost\":\n   Weak:  HOOK \"CACHING\" / TITLE \"What Is Prompt Caching?\"\n   Sharp: HOOK \"CACHED\" / TITLE \"90% Cheaper, Same Prompt\" / SUBTITLE \"Cached tokens bill at roughly a tenth of input cost - here's when it actually pays off.\"\n\n4) insight-content - topic \"sleep and screen time\", dataPoint \"blue light exposure delays melatonin onset by up to 90 minutes\":\n   Weak:  QUOTE \"Screen Time Affects Sleep\"\n   Sharp: QUOTE \"Your Phone Delays Sleep by 90 Minutes\" / SUPPORT \"Blue light exposure before bed pushes back melatonin release, not just 'makes it harder to sleep'.\"\n\n5) code-content - topic \"home espresso machines\", keyPoint \"9 bars is the standard extraction pressure, most consumer machines advertise 15\":\n   Weak:  TITLE \"Understanding Espresso Pressure\" / KEYWORD_1 \"Pressure\"\n   Sharp: TITLE \"Why 9 Bars, Not 15\" / SUBTITLE \"Machines market 15 bars, but real extraction happens at 9 - the rest is marketing.\" / KEYWORD_1 \"9-Bar Standard\" / KEYWORD_2 \"Overpressure\" / KEYWORD_3 \"Puck Prep\" / KEYWORD_4 \"Extraction Time\"\n\nOutput schema (slides ONLY - do NOT include instagram_caption or hashtags, those are generated separately):\n{\n  \"mpId\": \"<mpId>\",\n  \"template\": \"<template>\",\n  \"slides\": [\n    { \"id\": \"<mpId>-s01\", \"type\": \"intro\",   \"step\": null, \"data\": {} },\n    { \"id\": \"<mpId>-s02\", \"type\": \"isi\",     \"step\": 1,    \"data\": { \"STEP_NUM\": \"01\" } },\n    { \"id\": \"<mpId>-s03\", \"type\": \"isi\",     \"step\": 2,    \"data\": { \"STEP_NUM\": \"02\" } },\n    { \"id\": \"<mpId>-s04\", \"type\": \"isi\",     \"step\": 3,    \"data\": { \"STEP_NUM\": \"03\" } },\n    { \"id\": \"<mpId>-s05\", \"type\": \"isi\",     \"step\": 4,    \"data\": { \"STEP_NUM\": \"04\" } },\n    { \"id\": \"<mpId>-s06\", \"type\": \"isi\",     \"step\": 5,    \"data\": { \"STEP_NUM\": \"05\" } },\n    { \"id\": \"<mpId>-s07\", \"type\": \"closing\", \"step\": null, \"data\": {} }\n  ]\n}`;\n\n// CP-2c: escalate token ceiling per retry instead of repeating the same failing call\nconst retryCount = Number($json._retry_count || 0);\nconst plannerMaxTokens = 16000 + (retryCount * 8000);\n\nconst body = {\n  model: 'openai/gpt-oss-120b',\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'TEMPLATE GUIDE:\\n' + JSON.stringify(compactGuide) + '\\n\\nRESEARCH FINDINGS:\\n' + JSON.stringify(compactFindings) + '\\n\\nFINAL REQUIREMENT: Return a JSON object with mpId, template, and a slides array of exactly seven objects (s01 intro, s02-s06 isi, s07 closing). The combined word count across populated text fields in s01-s06 should be within this template wordCountRange (see TEMPLATE GUIDE), excluding STEP_NUM and TOTAL. This is a soft guideline. Do NOT include instagram_caption or hashtags.' }\n  ],\n  provider: {\n    order: ['deepinfra'],\n    allow_fallbacks: true\n  },\n  max_tokens: plannerMaxTokens,\n  temperature: 0.5,\n  response_format: { type: 'json_object' },\n  reasoning_effort: 'low'\n};\nreturn [{ json: { _plannerBody: body, mpId: mpId, template: template, _retry_count: retryCount } }];\n"
+      },
+      "id": "dd69ac36-3e9b-4597-b820-552a6dc47600",
+      "name": "Build AI Planner Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        432
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nfunction slugify(value) {\n  return String(value || 'general').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '') || 'general';\n}\nfunction shortHash(value) {\n  let hash = 0;\n  for (let i = 0; i < value.length; i++) hash = (hash * 31 + value.charCodeAt(i)) >>> 0;\n  return hash.toString(36).slice(0, 8);\n}\nfunction shortenMpId(value, maxLength = 96) {\n  if (value.length <= maxLength) return value;\n  const hash = shortHash(value);\n  const head = value.slice(0, maxLength - hash.length - 1).replace(/-+$/g, '');\n  return `${head}-${hash}`;\n}\nfunction buildMpId(date, topic) {\n  const yyyymmdd = String(date || new Date().toISOString().slice(0, 10)).replace(/[^0-9]/g, '').slice(0, 8) || new Date().toISOString().slice(0, 10).replace(/-/g, '');\n  return shortenMpId(`mp-${yyyymmdd}-${slugify(topic)}`);\n}\nfunction normalizeMpId(mpId, fallbackDate) {\n  if (!mpId) return buildMpId(fallbackDate, 'general');\n  const sanitized = String(mpId).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');\n  const ensuredPrefix = sanitized.startsWith('mp-') ? sanitized : `mp-${sanitized || 'general'}`;\n  return shortenMpId(ensuredPrefix);\n}\n\n// Priority 1: mpId from Form Trigger\nlet mpId = null;\nconst validTemplates = new Set(['tips-content', 'code-content', 'visual-content', 'template1-content', 'insight-content', 'editorial-content', 'momentum-content']);\nconst fallbackDate = DateTime.now().setZone('Asia/Makassar').toISODate();\ntry {\n  const formItems = $('Form Trigger - Manual Run').all();\n  if (formItems.length > 0) {\n    mpId = formItems[0].json?.mpId || null;\n    const ft = formItems[0].json?.template;\n    if (validTemplates.has(ft) && ft !== 'Auto') template_override = ft;\n  }\n} catch(e) {}\n\nlet masterPrompt;\n\nif (mpId) {\n  const mpPath = 'D:/Agent_workspace/ig-templates-demo/content-plans/master-prompts/' + mpId + '.json';\n  masterPrompt = JSON.parse(fs.readFileSync(mpPath, 'utf8'));\n} else {\n  const ctx = $json;\n  const today = ctx.today || fallbackDate;\n  mpId = buildMpId(today, ctx.activePlan?.topic || 'general');\n  masterPrompt = {\n    id: mpId,\n    mpId: mpId,\n    topic: ctx.activePlan?.topic || 'General',\n    subtopics: ctx.parsedSubtopics || [],\n    keywords: ctx.parsedKeywords || [],\n    sourceHints: ctx.researchSources || [],\n    topicDetail: (ctx.topic_detail || '').trim(),\n    researchConstraints: (ctx.research_constraints || '').trim(),\n    researchLens: ctx.todayLens || '',\n    tone: (ctx.masterContext?.voice?.tone || ['casual'])[0],\n    template: validTemplates.has(ctx.runOptions?.template) && ctx.runOptions.template !== 'Auto'\n      ? ctx.runOptions.template\n      : validTemplates.has(ctx.activePlan?.template)\n        ? ctx.activePlan.template\n        : 'tips-content',\n    angle: ctx.activePlan?.angle || '',\n    pillar: ctx.activePlan?.pillar || '',\n    runOptions: ctx.runOptions || {},\n    forbiddenAreas: ctx.masterContext?.scope?.forbidden_topics || [],\n    allowedDomains: [],\n    disallowedDomains: ['reddit.com','quora.com'],\n    imageStrategy: ''\n  };\n}\n\nconst normalizedMpId = normalizeMpId(masterPrompt.mpId || masterPrompt.id || mpId, fallbackDate);\nmpId = normalizedMpId;\nmasterPrompt.id = normalizedMpId;\nmasterPrompt.mpId = normalizedMpId;\nlet inferredAudience = 'a general audience';\ntry {\n  inferredAudience = String($('Parse Guard Result').first().json.audience || '').trim() || inferredAudience;\n} catch (error) {}\nmasterPrompt.audience = inferredAudience;\ntry {\n  const ctx = $('Build Daily Context').first().json;\n  if (!masterPrompt.researchLens) masterPrompt.researchLens = ctx.todayLens || '';\n} catch(e) {}\n\nconst systemPrompt = `You are the Brief Plan Generator for the IG Content Building Pipeline.\n\nINPUT: You receive a master prompt JSON containing topic, topicDetail (raw text, may be empty), keywords (optional reference), sourceHints (optional URLs from the Pre-Planner), researchLens, template, and editorial constraints.\n\nOutput ONLY valid JSON. No markdown fences. No explanation. No extra text.\n\nSTEP 1 - ANALYZE\nRead topic, topicDetail, keywords if provided, researchLens, template, audience, and editorial constraints.\nUnderstand what the carousel is about, who it serves, and what the research must prove or explain.\nTailor the brief to the provided audience.\n\nSTEP 2 - REASON INTERNALLY\nBefore generating output, reason about:\n- The core thesis of the carousel.\n- Five distinct angles that can support genuinely different slides (see 3c for how to handle a topic that cannot naturally split into five).\n- The evidence types needed: official documentation, benchmarks, case studies, engineering blogs, academic papers, or community discussions.\n- What must be excluded to keep the scope precise.\n- Which provided keywords are useful references. Keywords are optional hints, not mandatory subtopics and not mandatory words in every query.\n- Which sourceHints are useful leads. Verify every hint with web search before relying on it; never treat a hint as proof.\nDo not output private chain-of-thought. Output only the concise topicOverview summary in the JSON result.\n\nSTEP 3 - GENERATE THE RESEARCH BRIEF\n\n3a. topicOverview\nWrite 1-2 concise sentences describing what this carousel should cover, the core thesis, and why it matters to the audience. This is a summary of the reasoning, not a private chain-of-thought.\n\n3b. keywords\nIf input keywords are provided, treat them as optional reference hints. Preserve useful terms and add relevant terms when needed. You may ignore a keyword that does not fit naturally. If input keywords are empty, derive 3-5 useful keywords from the topic and topicDetail.\n\n3c. researchTopics\nProduce exactly 5 entries in researchTopics - one per isi slide, so the Planner can ground every slide in a dedicated angle. Prioritize genuine breadth: 5 independently-researchable angles are strongly preferred over splitting one angle.\n\nOnly when the topic truly cannot support 5 independent angles without redundancy, split your richest angle into two narrower, non-overlapping facets instead of inventing an unrelated 5th topic. A legitimate split means each facet would surface different primary sources and answer a different question - not the same source reworded twice.\n\nSelf-check before finalizing: for any two subtopics, would a targeted web search for each return substantially different top results? If yes, they're independent enough. If you expect the same 1-2 sources to dominate both, merge them into one subtopic and split a different, richer angle instead - or if only one truly rich angle exists in the whole topic, it's acceptable to split ONLY that one, keeping the other 3-4 subtopics independent.\n\nEach subtopic must:\n- Have a clear editorial purpose, not just \"overview of X\".\n- Be narrow enough to research deeply.\n- Be broad enough to find quality sources.\n- Cover a different aspect of the topic.\n- Support a practical reader outcome.\n\nExample (topic \"OpenCLI\"):\n- Weak padding: subtopic 5 = \"Best practices for CLI tools in general\" - unrelated filler, not really about OpenCLI.\n- Legitimate split: subtopic 4 = \"OpenCLI's CDP-based scraping mechanism\", subtopic 5 = \"OpenCLI's Chrome-version pinning and its trade-offs\" - both facets of the SAME rich technical angle, but ask different questions and would surface different specific details.\n\nExample (topic \"coffee brewing\"):\n- Weak padding: subtopic 5 = \"Why coffee is popular\" - broad filler that does not help someone make better coffee.\n- Legitimate split: subtopic 4 = \"How water temperature changes extraction\", subtopic 5 = \"How grind size changes extraction time\" - both address the same brewing goal but lead to different evidence and practical decisions.\n\nIf topicDetail is empty, derive subtopics from topic alone. If topicDetail is a short phrase, expand it into useful research angles without inventing an unrelated scope.\n\nFor each subtopic, create one primaryQuery and exactly two alternateQueries. The three queries must use different research intents, but choose the intents flexibly for the subject. Useful intents include official documentation or changelog, benchmark or statistics, case study, failure mode, debugging story, community discussion, tutorial, or scoped comparison. Do not create near-duplicate queries.\n\n3d. sourceTypes\nFor each research topic, provide 2-3 source type suggestions only, not specific URLs or domains. Examples: official docs, release notes, independent benchmark, engineering blog, academic paper, case study, community discussion, issue tracker, or tutorial.\n\n3e. contentDirection\nWrite 2-3 sentences describing the editorial angle and research boundary. Align it with researchLens:\n- Statistics & surprising numbers: prioritize measurable findings and counterintuitive numbers.\n- Case study / real example: prioritize named implementations and before/after evidence.\n- Common mistakes people make: prioritize anti-patterns, failure modes, and their costs.\n- Contrast: what people think vs reality: prioritize claims contradicted by evidence.\n- Latest data & trends this year: prioritize current-year releases and recent signals.\n- Direct comparison (A vs B): keep the comparison strictly inside the requested topic.\n- Actionable data-based tips: prioritize step-by-step guidance with evidence for each recommendation.\n- Deep dive / focused analysis: stay exhaustive and narrow on the core subject.\n\n3f. scope\nCopy forbiddenAreas, allowedDomains, and disallowedDomains directly from the master prompt. Apply researchConstraints as hard boundaries in researchTopics and contentDirection.\n\nTEMPLATE INTENT\n- tips-content: data-backed educational insight, framework, mistakes, statistics, or actions that can become five distinct text-led points. No image research is needed.\n- code-content: technical editorial breakdown of one tool, repository, architecture, or engineering decision. Emphasize thesis and trade-offs rather than generic tool lists. No image research is needed — instead identify 4 short, concrete key terms (tools, protocols, concepts) worth naming for this topic.\n- visual-content: screenshot, UI, diagram, or tool walkthrough where the visual is part of the explanation. Image planning is required.\n- template1-content: practical tips or insights using the white/coral Template1 design. Keep imagePlan empty.\n- insight-content: a sharp, sourced insight, claim, or reframe per slide, delivered as an editorial quote card. Works for any topic, including non-tech (health, finance, habits, culture). No image research is needed.\n- editorial-content: a premium, light-mode editorial carousel for topics that benefit from an elegant, magazine-like presentation. Each content slide develops one point with a title and explanation. No image research is needed.\n- momentum-content: a high-energy, dark-grain carousel for actionable steps or growth tactics. Each content slide develops one step with a title and explanation, with a circular progress-ring indicator instead of plain text pagination. No image research is needed.\nCopy the template value exactly from the master prompt.\n\nIMAGE PLANNING\n- visual-content: return imagePlan.intro for IMAGE_3D_URL and imagePlan.slides[1..5] for IMAGE_URL placeholders.\n- tips-content, code-content, template1-content, insight-content: imagePlan must be empty. None of these templates need image research.\n- Never invent image URLs. Image candidates are resolved by a later workflow path.\n- NEVER output an \"introLogoSlots\" field under any circumstances, even for code-content or topics that name multiple brands/tools. That field is retired and does not exist in the output schema below - do not add it.\n\nOUTPUT SCHEMA\n{\n  \"mpId\": \"<id>\",\n  \"template\": \"tips-content|code-content|visual-content|template1-content|insight-content|editorial-content|momentum-content\",\n  \"topicOverview\": \"<1-2 sentence summary of the thesis and audience value>\",\n  \"keywords\": [\"<useful input or derived keywords>\"],\n  \"sourceHints\": [{\"url\":\"<verified hint URL>\",\"title\":\"<title>\",\"type\":\"official-doc|release|repo|benchmark|paper|article|discussion\"}],\n  \"researchTopics\": [\n    {\n      \"topic\": \"<distinct subtopic>\",\n      \"primaryQuery\": \"<query with intent A>\",\n      \"alternateQueries\": [\"<query with intent B>\", \"<query with intent C>\"],\n      \"sourceTypes\": [\"<source type 1>\", \"<source type 2>\"]\n    }\n  ],\n  \"imageQueries\": [],\n  \"imagePlan\": {\n    \"intro\": { \"assetType\": \"hero-image|3d-render\", \"query\": \"...\", \"preferredDomains\": [\"...\"], \"mustReuseForClosing\": true },\n    \"slides\": [{ \"slot\": 1, \"query\": \"...\", \"assetType\": \"ui-screenshot|article-image|diagram\", \"preferredDomains\": [\"...\"], \"subject\": \"...\" }]\n  },\n  \"toneGuidance\": \"<1 sentence>\",\n  \"researchLens\": \"<echo the researchLens from the master prompt>\",\n  \"contentDirection\": \"<2-3 sentences>\",\n  \"forbiddenAreas\": [],\n  \"allowedDomains\": [],\n  \"disallowedDomains\": []\n}`;\n\nconst body = {\n  model: 'vertex_ai/openai/gpt-oss-120b-maas',\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'MASTER PROMPT:\\n' + JSON.stringify(masterPrompt) }\n  ],\n  max_tokens: 14000,\n  temperature: 0.4,\n  reasoning_effort: 'low',\n  response_format: { type: 'json_object' }\n};\nreturn [{ json: { _briefBody: body, mpId: masterPrompt.mpId || masterPrompt.id } }];"
+      },
+      "id": "ab2faa6d-908d-40da-963d-ea12eb867524",
+      "name": "Build AI Brief Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        608
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst mpId = $('Parse Plan').first().json.mpId;\nconst logPath = 'D:/Agent_workspace/ig-templates-demo/Demo render/' + mpId + '/render-log.json';\nconst renderLog = JSON.parse(fs.readFileSync(logPath, 'utf8'));\nreturn [{ json: { ...renderLog, mpId } }];"
+      },
+      "id": "267eac50-f185-49ec-b634-610cefc548b5",
+      "name": "Code: Read Render Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        400
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { execSync } = require('child_process');\nconst mpId = $json.mpId;\nif (!mpId) throw new Error('Missing mpId from Parse Plan output');\n\nconst cmd = 'node \"D:/Agent_workspace/ig-templates-demo/scripts/build-and-render-demo.mjs\" --mp-id=' + mpId;\nconsole.log('Running:', cmd);\n\ntry {\n  const output = execSync(cmd, { encoding: 'utf8', timeout: 120000, cwd: 'D:/Agent_workspace/ig-templates-demo' });\n  console.log(output);\n  return [{ json: { mpId, execOutput: output, success: true } }];\n} catch (err) {\n  const msg = (err.stdout || '') + (err.stderr || '') + (err.message || '');\n  throw new Error('Render failed for ' + mpId + ': ' + msg.substring(0, 2000));\n}"
+      },
+      "id": "8dd9ff8b-10e1-4218-96ca-a21945e9c29f",
+      "name": "Execute Command: Build & Render",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        400
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nfs.writeFileSync('D:/Agent_workspace/ig-templates/config/active_wait.json', JSON.stringify({ type: 'morning_brief', resumeUrl: 'http://localhost:5678/webhook-waiting/c6eeb560-e132-43ce-8623-1d0f7c32c070' }), 'utf8');\nreturn [{ json: $input.first().json }];"
+      },
+      "id": "14eb4e57-4661-4ca6-ae3a-706ea53da7c1",
+      "name": "Set Wait State: Morning Brief",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        80
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const { execSync } = require('child_process');\nconst mpId = $json.mpId || '';\nif (!mpId) return [{ json: { ...$json, _imageError: 'No mpId provided' } }];\ntry {\n  execSync('node D:/Agent_workspace/ig-templates/scripts/resolve-images.mjs --mp-id=' + mpId, { timeout: 30000, encoding: 'utf8' });\n} catch (e) {\n  return [{ json: { ...$json, _imageError: e.message } }];\n}\nreturn [{ json: $json }];"
+      },
+      "id": "e1f8f4e1-a19e-4783-a3d3-72e428acad5d",
+      "name": "Execute Command: Resolve Images",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        240
+      ],
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst mpId = $json.mpId || '';\nconst findings = $json.findings || {};\nconst imagePlan = $json.imagePlan || null;\nconst candidatesPath = 'D:/Agent_workspace/ig-templates/content-plans/image-candidates/' + mpId + '-images.json';\nconst imageCandidates = JSON.parse(fs.readFileSync(candidatesPath, 'utf8'));\nreturn [{ json: { ...$json, findings, imagePlan, imageCandidates, mpId, template: $json.template || findings.template || '' } }];"
+      },
+      "id": "02b5e989-8a9b-459e-8639-727b30faf226",
+      "name": "Code: Read Image Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        608
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scheduledAt = DateTime.now().setZone('Asia/Makassar');\nconst slotByTime = { '07:00': 1, '07:15': 2, '07:30': 3 };\nconst scheduledTime = scheduledAt.toFormat('HH:mm');\nconst runSlot = slotByTime[scheduledTime];\n\nif (!runSlot) {\n  throw new Error(`Unexpected cron time ${scheduledTime}; no scheduled slot is configured.`);\n}\n\nreturn [{\n  json: {\n    runSource: 'cron',\n    runSlot,\n    scheduledAt: scheduledAt.toISO(),\n    today: scheduledAt.toISODate(),\n  },\n}];"
+      },
+      "id": "c0b2e6a7-ecce-4bc7-bfee-cfec6de75ccf",
+      "name": "Code: Set Cron Run Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-has-plan",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "HAS_PLAN",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8d6fcb5d-4efa-4072-acca-c3dc5f914871",
+      "name": "If - Run Has Plan?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-cron-run",
+              "leftValue": "={{ $json.runSource }}",
+              "rightValue": "cron",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "68d0f7b9-7b04-4afb-a2d8-2ee3fa82af83",
+      "name": "If - Cron Run?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $input.first().json;\nlet message;\nif (ctx.status === 'NO_PLAN') {\n  const slotLabel = ctx.runSlot ? 'slot ' + ctx.runSlot : '';\n  message = '⚠️ Cron ' + slotLabel + ': No pending plan found for ' + ctx.today + '. Skipping.';\n} else if (ctx.status === 'NO_MANUAL_TOPIC') {\n  message = '⚠️ Manual run: No topic_override provided. Fill topic_override to run ad-hoc.';\n} else {\n  message = '⚠️ Unknown run status: ' + ctx.status;\n}\nreturn [{ json: { telegram_text: message, ...ctx } }];"
+      },
+      "id": "ffb29f47-edc5-4d67-868b-16c44aa748d2",
+      "name": "Code: Build Run Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "8675308460",
+        "text": "={{ $json.telegram_text }}",
+        "additionalFields": {
+          "parse_mode": ""
+        },
+        "resource": "chat"
+      },
+      "id": "13c06da4-620f-457e-9a21-9b4f13abd8f4",
+      "name": "Telegram - Send Operational Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1888,
+        224
+      ],
+      "webhookId": "74911efe-3223-447a-865f-d11e055e032c"
+    },
+    {
+      "parameters": {},
+      "id": "3903d4f6-d47d-4d98-872e-a81f8224c9b4",
+      "name": "NoOp - Alert End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1TuezG43j45nXBrL-KRq_n-srMZyw_832YBvszmLveuo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $json.planClaim.plan_id }}",
+            "status": "processing",
+            "mpId": "={{ $json.mpId }}",
+            "started_at": "={{ $now.toISO() }}",
+            "error": ""
+          },
+          "matchingColumns": [
+            "plan_id"
+          ],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "mpId",
+              "displayName": "mpId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7d8ad929-8cd4-4e26-a465-e8be70a442d3",
+      "name": "Google Sheets: Claim Content Plan Slot",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1600,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $('Build Daily Context').first().json;\n\nif (ctx.runSource === 'cron' && ctx.planClaim) {\n  const claimResult = $input.first().json;\n  if (!claimResult || !claimResult.plan_id) {\n    throw new Error('Plan claim failed: no plan_id found for ' + ctx.planClaim.plan_id);\n  }\n}\n\nreturn [{ json: ctx }];"
+      },
+      "id": "8642ac89-471c-4f62-8ed3-1a3c960e2b35",
+      "name": "Code: Restore Run Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1TuezG43j45nXBrL-KRq_n-srMZyw_832YBvszmLveuo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "plan_id": "={{ $('Build Daily Context').first().json.planClaim.plan_id }}",
+            "status": "success",
+            "completed_at": "={{ $now.toISO() }}",
+            "mpId": "={{ $('Build Daily Context').first().json.mpId }}"
+          },
+          "matchingColumns": [
+            "plan_id"
+          ],
+          "schema": [
+            {
+              "id": "plan_id",
+              "displayName": "plan_id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "completed_at",
+              "displayName": "completed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "mpId",
+              "displayName": "mpId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e0783e8a-31fc-4536-a009-48bef5f03f58",
+      "name": "Google Sheets: Mark Content Plan Success",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        4176,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const finalOutput = $('Code: Build Final Output').first().json;\nconst context = $('Build Daily Context').first().json;\nconst testMode = context.runOptions?.test_mode || context.test_mode || 'Live run';\n\nif (testMode === 'Test') return [];\nreturn [{ json: finalOutput }];"
+      },
+      "id": "21e1c8f2-06e4-4f50-baa8-108723ddadcb",
+      "name": "Code: Restore Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-cron-end",
+              "leftValue": "={{ $('Build Daily Context').first().json.runSource }}",
+              "rightValue": "cron",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a16bbfda-40e0-401a-9813-203a4806363e",
+      "name": "If - Cron Run (Mark Success)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3920,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst template = input.template || '';\nconst imagePlan = input.imagePlan;\nconst imageCandidates = input.imageCandidates || {};\n\nif (!imagePlan) {\n  return [{ json: input }];\n}\n\nconst errors = [];\n\nif (imageCandidates.error || imageCandidates._imageError) {\n  errors.push('Image candidates file error: ' + (imageCandidates.error || imageCandidates._imageError));\n}\n\nif (template === 'visual-content') {\n  if (!imageCandidates.intro?.primary?.validated || !imageCandidates.intro?.primary?.url) {\n    errors.push('visual-content: intro primary image candidate is missing or not validated');\n  }\n  const slides = imageCandidates.slides || [];\n  for (let i = 1; i <= 5; i++) {\n    const slot = slides.find(s => s.slot === i);\n    if (!slot?.primary?.validated || !slot?.primary?.url) {\n      errors.push('visual-content: slide ' + i + ' image candidate is missing or not validated');\n    }\n  }\n}\n\nif (template === 'code-content') {\n  const slots = imageCandidates.introLogoSlots || [];\n  for (let i = 1; i <= 4; i++) {\n    const slot = slots.find(s => s.slot === i);\n    if (slot && (!slot.primary?.validated || !slot.primary?.url)) {\n      errors.push('code-content: intro logo slot ' + i + ' candidate exists but is not validated');\n    }\n  }\n}\n\nif (errors.length > 0) {\n  throw new Error('Image validation failed:\\n' + errors.join('\\n'));\n}\n\nreturn [{ json: input }];"
+      },
+      "id": "8ac8d81b-1930-45ff-8bc6-4c31080601c8",
+      "name": "Code: Validate Image Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        416
+      ],
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nlet ctx = {};\nlet cronContext = {};\ntry { ctx = $('Build Daily Context').first().json; } catch (error) {}\ntry { cronContext = $('Code: Set Cron Run Context').first().json; } catch (error) {}\nconst stable = Object.keys(ctx).length ? ctx : cronContext;\nconst errorValue = input.error?.message || input.error || input.message || 'Unknown error';\nconst stage = input.error?.node?.name || input.error?.context?.nodeName || input.nodeName || 'unknown';\nconst error = String(errorValue).slice(0, 1000);\nconst planId = stable.planClaim?.plan_id || null;\nconst mpId = stable.mpId || '';\nconst runSource = stable.runSource || 'unknown';\nconst runSlot = stable.runSlot || null;\nconst topic = stable.activePlan?.topic || '';\nconst telegram_text = [\n  '⚠️ IG Content run failed',\n  'Stage: ' + stage,\n  'Source: ' + runSource + (runSlot ? ' slot ' + runSlot : ''),\n  planId ? 'Plan: ' + planId : '',\n  mpId ? 'mpId: ' + mpId : '',\n  topic ? 'Topic: ' + topic : '',\n  'Error: ' + error\n].filter(Boolean).join('\\n');\nreturn [{ json: { runSource, planId, runSlot, mpId, topic, stage, error, telegram_text } }];"
+      },
+      "id": "5fe37dc0-0567-4c31-aa88-96413a5428cc",
+      "name": "Code: Build Failure Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.runSource }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "cron"
+            },
+            {
+              "leftValue": "={{ $json.planId }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "66f5de2d-ae3f-432b-a332-67aa87bef7d6",
+      "name": "If - Cron Run Failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2656,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1TuezG43j45nXBrL-KRq_n-srMZyw_832YBvszmLveuo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "plan_id"
+          ],
+          "value": {
+            "plan_id": "={{ $json.planId }}",
+            "status": "failed",
+            "error": "={{ $json.error }}",
+            "completed_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "e6237b2b-9df1-4307-9351-5dc2cfb7c92c",
+      "name": "Google Sheets: Mark Content Plan Failed",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2912,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-form",
+              "leftValue": "={{ $json.formMode }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0232e009-77aa-4fee-a184-fc450d52ab0d",
+      "name": "If - Form Trigger?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        512,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.first().json;\nconst plan = $('Parse Plan').first().json;\nconst ctx = $('Build Daily Context').first().json;\nconst research = $('Parse Research').first().json;\n\nconst slides = plan.slides || [];\nconst slideSummaries = slides.map(function(s, i) {\n  const title = s.data?.TITLE || s.data?.TITLE_LINE1 || '';\n  const expl = (s.data?.EXPLANATION || s.data?.EXPLANATION_L1 || '').substring(0, 200);\n  return 'Slide ' + (i + 1) + ' (' + s.type + '): ' + title + ' - ' + expl;\n}).join('\\n');\n\nconst existingCaption = plan.instagram_caption || '';\nconst voice = ctx.masterContext?.voice || {};\nconst tone = Array.isArray(voice.tone) ? voice.tone.join(', ') : 'educational, casual';\nconst audience = ctx.masterContext?.audience?.target || 'developers and AI builders';\n\nconst langPref = String(ctx.runOptions?.language || '').trim();\nconst isIndonesian = /^(id|indonesia|bahasa|bahasa indonesia|bhs indonesia)$/i.test(langPref);\nconst languageLine = isIndonesian\n  ? 'Bahasa Indonesia - write like a native Indonesian social media copywriter: natural, idiomatic, conversational, not a literal translation. Keep brand/tool names and technical terms in their original form when there is no natural Indonesian equivalent'\n  : 'English';\n\nconst systemPrompt = 'You are an Instagram caption specialist. Your job is to write one viral-quality Instagram caption from the slide content provided.\\n\\nRules:\\n- Start with a punchy 1-sentence hook that creates curiosity or tension\\n- Follow with 3-5 conversational sentences covering the key insights\\n- Do NOT repeat the hook verbatim in the body\\n- End with a clear CTA (e.g. \"Save this for later\", \"Follow for more\", \"Share with a friend\")\\n- Max 1200 characters\\n- Tone: ' + tone + '. Language: ' + languageLine + '.\\n- Audience: ' + audience + '\\n- Do NOT include hashtags in the caption';\n\nconst userPrompt = 'SLIDE CONTENT:\\n' + slideSummaries + '\\n\\nEXISTING CAPTION (for reference, improve upon it):\\n' + existingCaption + '\\n\\nWrite a new, improved Instagram caption based on the slide content above. Output as JSON with field \"instagram_caption\".';\n\nconst body = {\n  model: 'gpt-5-nano',\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userPrompt }\n  ],\n  max_tokens: 3000,\n  temperature: 0.6,\n  reasoning_effort: 'low',\n  response_format: { type: 'json_object' }\n};\n\nreturn [{ json: { ...inputData, _captionBody: body, mpId: plan.mpId } }];\n"
+      },
+      "id": "d6deb668-339b-4d8a-8621-dd2778a46379",
+      "name": "Build Caption Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3152,
+        288
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.koboillm.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json._captionBody }}",
+        "options": {
+          "timeout": 60000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "86e6b2a2-4eb6-48a2-9367-85d958a665d5",
+      "name": "AI Caption Generator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        3264,
+        784
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_SET_IN_N8N",
+          "name": "KobiLLM Authorization - IG Content Builder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.first().json;\nconst plan = $('Parse Plan').first().json;\n\nconst instagram_caption = plan.instagram_caption || '';\nconst hashtags = Array.isArray(plan.hashtags) ? plan.hashtags : [];\n\nlet aiCaption = null;\nlet captionError = null;\n\nconst fs = require('fs');\n\ntry {\n  const response = $json.choices?.[0]?.message?.content;\n  if (response) {\n    const parsed = JSON.parse(response);\n    aiCaption = parsed.instagram_caption || parsed.caption || null;\n    if (aiCaption && aiCaption.length > 1200) aiCaption = aiCaption.substring(0, 1200);\n  }\n} catch(e) {\n  captionError = e.message;\n}\n\nconst finalCaption = aiCaption || instagram_caption;\nconst finalHashtags = hashtags;\n\nif (aiCaption) {\n  try {\n    const mpId = plan.mpId || 'unknown';\n    const dir = 'D:/Agent_workspace/ig-templates-demo/content-plans/captions';\n    fs.mkdirSync(dir, { recursive: true });\n    fs.writeFileSync(dir + '/' + mpId + '-caption.json', JSON.stringify({\n      mpId: mpId,\n      caption: finalCaption,\n      hashtags: finalHashtags,\n      source: 'ai',\n      originalPlannerCaption: instagram_caption\n    }, null, 2), 'utf8');\n  } catch(e) {}\n}\n\nreturn [{ json: {\n  ...inputData,\n  ...plan,\n  instagram_caption: finalCaption,\n  hashtags: finalHashtags,\n  hashtagsStr: finalHashtags.join(' '),\n  _captionSource: aiCaption ? 'ai' : 'planner_fallback',\n  _captionError: captionError\n} }];"
+      },
+      "id": "cbe8d388-e788-4f11-80ea-069ac515664d",
+      "name": "Parse Caption",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3392,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const form = $('Form Trigger - Manual Run').first().json || {};\nconst topic = String(form.topic_override || '').trim();\nconst topicDetail = String(form.topic_detail || '').trim();\nconst keywords = String(form.keywords || '').trim();\n\nconst body = {\n  model: 'gpt-5-nano',\n  messages: [\n    {\n      role: 'system',\n      content: 'Classify a public content topic. Return only JSON with allowed, reason, audience, and category. Block NSFW, hateful, illegal, defamatory, spam, dangerous, or empty topics. Allow safe non-technology topics. Infer the intended audience and broad category.'\n    },\n    {\n      role: 'user',\n      content: JSON.stringify({ topic, topicDetail, keywords })\n    }\n  ],\n  max_tokens: 512,\n  temperature: 0,\n  reasoning_effort: 'low',\n  response_format: { type: 'json_object' }\n};\n\nreturn [{ json: { _guardBody: body, topic_override: topic } }];"
+      },
+      "id": "0453f698-92bc-44a1-b2d3-ae19461d28f3",
+      "name": "Build Safety Guard Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.koboillm.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json._guardBody }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "2efc3f5b-0307-44e8-b7a6-c6d15bbace62",
+      "name": "AI Safety Guard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        752,
+        448
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $json.choices?.[0]?.message?.content || $json.content || '';\n\nfunction parseJson(value) {\n  if (value && typeof value === 'object') return value;\n  const text = String(value || '').replace(/^```json\\s*/i, '').replace(/```$/i, '').trim();\n  try { return JSON.parse(text); } catch (error) {}\n  const match = text.match(/\\{[\\s\\S]*\\}/);\n  if (match) {\n    try { return JSON.parse(match[0]); } catch (error) {}\n  }\n  return null;\n}\n\nconst parsed = parseJson(response);\nconst allowed = parsed?.allowed === true;\nconst reason = String(parsed?.reason || (allowed ? 'Topic allowed.' : 'Topic was not accepted by the safety guard.')).trim();\nconst audience = String(parsed?.audience || 'a general audience').trim() || 'a general audience';\nconst category = String(parsed?.category || 'general').trim() || 'general';\n\nreturn [{\n  json: {\n    ...$('Form Trigger - Manual Run').first().json,\n    guard_allowed: allowed,\n    guard_reason: reason,\n    guard_audience: audience,\n    guard_category: category,\n    guard_result: { allowed, reason, audience, category }\n  }\n}];"
+      },
+      "id": "62fabbd4-0d0c-4f3f-80c7-d8f689e0e899",
+      "name": "Parse Guard Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "id": "guard-allowed",
+              "leftValue": "={{ $json.guard_allowed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "da3aac7b-5852-4fd3-adec-dddfe34f1e73",
+      "name": "If Topic Allowed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"formSubmittedText\":\"Maaf, topik ini tidak didukung untuk demo publik. Silakan coba topik lain.\"}",
+        "options": {}
+      },
+      "id": "d6c20572-15dc-4c15-919e-2aca77755332",
+      "name": "Respond - Topic Blocked",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1408,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"formSubmittedText\":\"Permintaan diterima. Konten demo selesai diproses dan render berhasil dibuat.\"}",
+        "options": {}
+      },
+      "id": "1270bbda-212e-41d5-8b03-ae002fb76b6d",
+      "name": "Respond - Demo Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3664,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { formSubmittedText: 'Permintaan diterima. Konten demo selesai diproses dan render berhasil dibuat.' } }];"
+      },
+      "id": "9d78e997-9f39-4a67-b9f5-2df811e61a3e",
+      "name": "Prepare Demo Success Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3664,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst pngPaths = ($json.pngPaths || []).filter(p => typeof p === 'string' && p.toLowerCase().endsWith('.png') && fs.existsSync(p));\n\nconst subject = 'Your IG Carousel Demo — ' + ($json.mpId || '');\nconst bodyParts = [\n  $json.instagram_caption || '',\n  $json.hashtagsStr ? ('\\n\\n' + $json.hashtagsStr) : '',\n];\nconst body = bodyParts.join('').trim() || 'Your demo carousel is ready — see the attached slides.';\n\nconst item = { json: { mpId: $json.mpId, subject, body }, binary: {} };\n\nfor (let i = 0; i < pngPaths.length; i++) {\n  const buf = fs.readFileSync(pngPaths[i]);\n  const filename = path.basename(pngPaths[i]);\n  const key = 'slide_' + String(i + 1).padStart(2, '0');\n  item.binary[key] = await this.helpers.prepareBinaryData(buf, filename, 'image/png');\n}\n\nreturn [item];"
+      },
+      "id": "ccde1c06-0f5d-4e91-bf13-56003df17a9c",
+      "name": "Build Result Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4208,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Restore Demo Access Context').first().json.normalized_email || ($('Build Daily Context').first().json.runOptions || {}).email || 'igedesatrya@gmail.com' }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "={{ Object.keys($binary).join(',') }}"
+              }
+            ]
+          }
+        },
+        "operation": "send"
+      },
+      "id": "b7156e11-5f97-4f51-bf3e-4c0ecceb672a",
+      "name": "Send Result Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        4448,
+        720
+      ],
+      "webhookId": "b8ebdeab-8fc5-41fb-b26a-c29847c366a4"
+    },
+    {
+      "parameters": {
+        "jsCode": "let email = '';\ntry { email = $('Restore Demo Access Context').first().json.normalized_email || ''; } catch(e) {}\nif (!email) {\n  try { email = ($('Build Daily Context').first().json.runOptions || {}).email || ''; } catch(e) {}\n}\nif (!email) { email = 'igedesatrya@gmail.com'; }\n\nconst mpId = $json.mpId || '';\nconst topic = $json.topic || '';\nconst stage = $json.stage || 'unknown';\nconst errorText = $json.error || 'Unknown error';\n\nconst subject = 'Demo run failed' + (mpId ? (' — ' + mpId) : '');\nconst body = [\n  'Sorry, something went wrong while generating your demo carousel.',\n  '',\n  'Technical details:',\n  'Stage: ' + stage,\n  topic ? ('Topic: ' + topic) : '',\n  'Error: ' + errorText,\n].filter(Boolean).join('\\n');\n\nconst shortAlert = '❌ Demo run failed — mpId: ' + (mpId || '?') + ' · stage: ' + stage;\n\nreturn [{ json: { email, mpId, subject, body, shortAlert } }];"
+      },
+      "id": "cf71b890-2779-4f8e-ac76-a252047fa7db",
+      "name": "Build Demo Error Notice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {},
+        "operation": "send"
+      },
+      "id": "8daa614a-5bc9-4ddb-b05c-db9c2e8390b3",
+      "name": "Send Error Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        864
+      ],
+      "webhookId": "aadf6aca-5dcd-4101-b3c3-06671df5b3c1"
+    },
+    {
+      "parameters": {
+        "chatId": "8675308460",
+        "text": "={{ $json.shortAlert }}",
+        "additionalFields": {},
+        "resource": "chat"
+      },
+      "id": "2abad390-e343-4b3d-abe3-96fc9cbde5f4",
+      "name": "Telegram - Send Demo Error Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2640,
+        960
+      ],
+      "webhookId": "00a4ae4b-08a6-4dfe-89f8-f170b90a712c"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { formSubmittedText: 'Maaf, ada kendala teknis saat memproses permintaan ini. Detail teknis sudah dikirim ke email jika sempat tercatat.' } }];"
+      },
+      "id": "7b8e7f98-fe55-4871-9663-27cd09a5e17c",
+      "name": "Prepare Demo Error Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"formSubmittedText\":\"Maaf, ada kendala teknis saat memproses permintaan ini. Detail teknis sudah dikirim ke email jika sempat tercatat.\"}",
+        "options": {}
+      },
+      "id": "86cb2f98-1157-4f1c-bd1f-f564a8f4d6a1",
+      "name": "Respond - Demo Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2880,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const form = $('Form Trigger - Manual Run').first().json || {};\nconst guard = $('Parse Guard Result').first().json || {};\nconst normalizedEmail = String(form.email || '').trim().toLowerCase();\nconst accessCode = String(form.owner_access_code || '');\nconst usageDate = DateTime.now().setZone('Asia/Makassar').toISODate();\nreturn [{ json: { normalized_email: normalizedEmail, owner_access_code: accessCode, usage_date: usageDate, guard_allowed: guard.guard_allowed === true, guard_audience: guard.guard_audience || '', guard_category: guard.guard_category || '', guard_reason: guard.guard_reason || '' } }];"
+      },
+      "id": "9bda0f3b-1143-4776-bf1f-0f42d8c5fb61",
+      "name": "Normalize Demo Access",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "value": "={{ $('Normalize Demo Access').first().json.normalized_email }}",
+        "dataPropertyName": "email_hash"
+      },
+      "id": "33db2f57-3378-4a4a-9438-bbc3c64c66d5",
+      "name": "Hash Demo Email",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "value": "={{ $('Normalize Demo Access').first().json.owner_access_code }}",
+        "dataPropertyName": "owner_access_hash"
+      },
+      "id": "c1f0f016-942e-4b44-9ef8-a49a20f570db",
+      "name": "Hash Owner Access Code",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const access = $('Normalize Demo Access').first().json || {};\nconst emailHash = $('Hash Demo Email').first().json.email_hash || '';\nconst ownerHash = $('Hash Owner Access Code').first().json.owner_access_hash || '';\nconst OWNER_EMAIL = 'igedesatrya@gmail.com';\nconst OWNER_ACCESS_SHA256 = '5d99996370787130c5dcb15e601ec66556e72af50683e2349a5de741bd0d0557';\nconst ownerEmail = OWNER_EMAIL.trim().toLowerCase();\nconst configuredOwnerHash = OWNER_ACCESS_SHA256.trim().toLowerCase();\nconst isOwner = Boolean(access.normalized_email && ownerEmail && emailHash && ownerHash && access.normalized_email === ownerEmail && ownerHash.toLowerCase() === configuredOwnerHash);\nlet formMode = '';\ntry { formMode = $('Form Trigger - Manual Run').first().json.formMode || ''; } catch (e) {}\nreturn [{ json: { normalized_email: access.normalized_email, email_hash: emailHash, usage_date: access.usage_date, quota_key: emailHash + ':' + access.usage_date, is_owner: isOwner, quota_limit: 5, guard_allowed: access.guard_allowed, guard_audience: access.guard_audience, guard_category: access.guard_category, guard_reason: access.guard_reason, formMode } }];"
+      },
+      "id": "a6d22f5f-2265-44ec-99c8-a9a9e77072d9",
+      "name": "Build Demo Access Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1952,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "demo-owner",
+              "leftValue": "={{ $json.is_owner }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6a4b0b7e-5de9-4bf7-b8f0-5fef1a62f4d5",
+      "name": "If - Demo Owner?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "mode": "id",
+          "value": "YBqqk348L0UIao7p",
+          "__rl": true
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "quota_key",
+              "keyValue": "={{ $('Build Demo Access Context').first().json.quota_key }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "id": "7de54fa4-af91-4ae6-953f-a7e36a6c61fa",
+      "name": "Get Daily Demo Usage",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2368,
+        608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const access = $('Build Demo Access Context').first().json || {};\nconst current = Number($json.run_count || 0);\nconst allowed = current < access.quota_limit;\nconst nextCount = allowed ? current + 1 : current;\nreturn [{ json: { ...access, current_count: current, next_count: nextCount, quota_allowed: allowed, remaining_after_run: Math.max(0, access.quota_limit - nextCount) } }];"
+      },
+      "id": "0e84f8ce-6b13-49cc-aeba-6aee02c9e6cb",
+      "name": "Assess Daily Demo Quota",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2608,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "quota-available",
+              "leftValue": "={{ $json.quota_allowed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a0e3b28a-1d16-4f5a-93a2-4e1f60c11d29",
+      "name": "If - Daily Quota Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2848,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "mode": "id",
+          "value": "YBqqk348L0UIao7p",
+          "__rl": true
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "quota_key",
+              "keyValue": "={{ $json.quota_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "quota_key": "={{ $json.quota_key }}",
+            "email_hash": "={{ $json.email_hash }}",
+            "usage_date": "={{ $json.usage_date }}",
+            "run_count": "={{ $json.next_count }}",
+            "updated_at": "={{ $now }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "c9bf05d5-95f8-4d4e-bf30-1ee087144e73",
+      "name": "Upsert Daily Demo Usage",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3120,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"formSubmittedText\":\"Batas demo hari ini sudah tercapai. Setiap email mendapat 5 percobaan per hari. Silakan coba lagi setelah pukul 00:00 WITA.\"}",
+        "options": {}
+      },
+      "id": "b8fb39ce-62d4-491f-a6b6-6548b095c204",
+      "name": "Respond - Daily Limit Reached",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3088,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const access = $('Build Demo Access Context').first().json || {};\nreturn [{ json: { ...access, quota_reserved: true } }];"
+      },
+      "id": "2c1cc8fd-5525-4565-a52c-97a56a0b85c7",
+      "name": "Restore Demo Access Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3328,
+        608
+      ]
+    }
+  ],
+  "connections": {
+    "Wait - User Response": {
+      "main": [
+        [
+          {
+            "node": "Parse Telegram Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Telegram Reply": {
+      "main": [
+        [
+          {
+            "node": "If - Skip Today?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Valid Content?": {
+      "main": [
+        [
+          {
+            "node": "Check Retry Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Caption Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "If - Valid Content?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Skip Today?": {
+      "main": [
+        [
+          {
+            "node": "NoOp - End",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build AI Research Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Plan from Sheets": {
+      "main": [
+        [
+          {
+            "node": "Load Content History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Content History": {
+      "main": [
+        [
+          {
+            "node": "Build Daily Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Brief": {
+      "main": [
+        [
+          {
+            "node": "Build AI Research Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Research": {
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ],
+      "main": [
+        [
+          {
+            "node": "Build AI Planner Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Build Final Output": {
+      "main": [
+        [
+          {
+            "node": "Log to Content Log (Sheets)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If - Cron Run (Mark Success)?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Demo Success Response",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Result Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build AI Research Body": {
+      "main": [
+        [
+          {
+            "node": "AI Research (MiMo)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build AI Planner Body": {
+      "main": [
+        [
+          {
+            "node": "AI Planner (MiMo)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build AI Brief Body": {
+      "main": [
+        [
+          {
+            "node": "AI Brief Generator (MiMo)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Read Render Log": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Plan": {
+      "main": [
+        [
+          {
+            "node": "Execute Command: Build & Render",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Check Retry Limit",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command: Build & Render": {
+      "main": [
+        [
+          {
+            "node": "Code: Read Render Log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Planner (MiMo)": {
+      "main": [
+        [
+          {
+            "node": "Parse Plan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Research (MiMo)": {
+      "main": [
+        [
+          {
+            "node": "Parse Research",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Brief Generator (MiMo)": {
+      "main": [
+        [
+          {
+            "node": "Parse Brief",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Morning Brief": {
+      "main": [
+        [
+          {
+            "node": "Set Wait State: Morning Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Wait State: Morning Brief": {
+      "main": [
+        [
+          {
+            "node": "Wait - User Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command: Resolve Images": {
+      "main": [
+        [
+          {
+            "node": "Code: Read Image Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Set Cron Run Context": {
+      "main": [
+        [
+          {
+            "node": "Load Master Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Daily Context": {
+      "main": [
+        [
+          {
+            "node": "If - Run Has Plan?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Run Has Plan?": {
+      "main": [
+        [
+          {
+            "node": "If - Cron Run?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Run Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Build Run Alert": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Send Operational Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram - Send Operational Alert": {
+      "main": [
+        [
+          {
+            "node": "NoOp - Alert End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Cron Run?": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Claim Content Plan Slot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Restore Run Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Claim Content Plan Slot": {
+      "main": [
+        [
+          {
+            "node": "Code: Restore Run Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Restore Run Context": {
+      "main": [
+        [
+          {
+            "node": "Build AI Brief Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Content Log (Sheets)": {
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Cron Run (Mark Success)?": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Mark Content Plan Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Restore Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Mark Content Plan Success": {
+      "main": [
+        [
+          {
+            "node": "Code: Restore Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Restore Final Output": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Send Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Retry Limit": {
+      "main": [
+        [
+          {
+            "node": "Build AI Planner Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Read Image Candidates": {
+      "main": [
+        [
+          {
+            "node": "Code: Validate Image Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Validate Image Candidates": {
+      "error": [
+        [
+          {
+            "node": "Code: Build Failure Context",
+            "type": "error",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Build Failure Context": {
+      "main": [
+        [
+          {
+            "node": "If - Cron Run Failed?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Demo Error Notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Cron Run Failed?": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Mark Content Plan Failed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram - Send Operational Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Mark Content Plan Failed": {
+      "main": [
+        [
+          {
+            "node": "Telegram - Send Operational Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Master Context": {
+      "main": [
+        [
+          {
+            "node": "If - Form Trigger?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Form Trigger?": {
+      "main": [
+        [
+          {
+            "node": "Build Daily Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Load Plan from Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Caption Body": {
+      "main": [
+        [
+          {
+            "node": "AI Caption Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Caption Generator": {
+      "main": [
+        [
+          {
+            "node": "Parse Caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Caption": {
+      "main": [
+        [
+          {
+            "node": "Code: Build Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form Trigger - Manual Run": {
+      "main": [
+        [
+          {
+            "node": "Build Safety Guard Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Safety Guard Body": {
+      "main": [
+        [
+          {
+            "node": "AI Safety Guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Safety Guard": {
+      "main": [
+        [
+          {
+            "node": "Parse Guard Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Guard Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Guard Result": {
+      "main": [
+        [
+          {
+            "node": "If Topic Allowed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Topic Allowed?": {
+      "main": [
+        [
+          {
+            "node": "Normalize Demo Access",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Topic Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Demo Success Response": {
+      "main": [
+        [
+          {
+            "node": "Respond - Demo Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Result Email": {
+      "main": [
+        [
+          {
+            "node": "Send Result Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Demo Error Notice": {
+      "main": [
+        [
+          {
+            "node": "Send Error Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram - Send Demo Error Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Demo Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Demo Error Response": {
+      "main": [
+        [
+          {
+            "node": "Respond - Demo Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Demo Access": {
+      "main": [
+        [
+          {
+            "node": "Hash Demo Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Demo Email": {
+      "main": [
+        [
+          {
+            "node": "Hash Owner Access Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Owner Access Code": {
+      "main": [
+        [
+          {
+            "node": "Build Demo Access Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Demo Access Context": {
+      "main": [
+        [
+          {
+            "node": "If - Demo Owner?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Demo Owner?": {
+      "main": [
+        [
+          {
+            "node": "Load Master Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Daily Demo Usage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Daily Demo Usage": {
+      "main": [
+        [
+          {
+            "node": "Assess Daily Demo Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assess Daily Demo Quota": {
+      "main": [
+        [
+          {
+            "node": "If - Daily Quota Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Daily Quota Available?": {
+      "main": [
+        [
+          {
+            "node": "Upsert Daily Demo Usage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Daily Limit Reached",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Daily Demo Usage": {
+      "main": [
+        [
+          {
+            "node": "Restore Demo Access Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Demo Access Context": {
+      "main": [
+        [
+          {
+            "node": "Load Master Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "saveExecutionProgress": false,
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timezone": "Asia/Makassar"
+  },
+  "versionId": "1ec66704-ee34-404b-9a53-4d7214ac30ec",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "id": "V8VbQm1KWpe7jj7Y",
+  "tags": []
+}
