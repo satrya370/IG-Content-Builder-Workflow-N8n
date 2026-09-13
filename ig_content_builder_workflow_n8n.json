@@ -890,7 +890,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const { execSync } = require('child_process');\nconst mpId = $json.mpId;\nif (!mpId) throw new Error('Missing mpId from Parse Plan output');\n\nconst cmd = 'node \"/home/node/ig-templates-demo/scripts/build-and-render-demo.mjs\" --mp-id=' + mpId;\nconsole.log('Running:', cmd);\n\ntry {\n  const output = execSync(cmd, { encoding: 'utf8', timeout: 120000, cwd: '/home/node/ig-templates-demo', env: { ...process.env, CHROMIUM_WS_ENDPOINT: process.env.CHROMIUM_WS_ENDPOINT || 'ws://chromium:3000' } });\n  console.log(output);\n  return [{ json: { mpId, execOutput: output, success: true } }];\n} catch (err) {\n  const msg = (err.stdout || '') + (err.stderr || '') + (err.message || '');\n  throw new Error('Render failed for ' + mpId + ': ' + msg.substring(0, 2000));\n}"
+        "jsCode": "const { execSync } = require('child_process');\nconst mpId = $json.mpId;\nif (!mpId) throw new Error('Missing mpId from Parse Plan output');\n\nconst cmd = 'CHROMIUM_WS_ENDPOINT=ws://chromium:3000 node \"/home/node/ig-templates-demo/scripts/build-and-render-demo.mjs\" --mp-id=' + mpId;\nconsole.log('Running:', cmd);\n\ntry {\n  const output = execSync(cmd, { encoding: 'utf8', timeout: 120000, cwd: '/home/node/ig-templates-demo' });\n  console.log(output);\n  return [{ json: { mpId, execOutput: output, success: true } }];\n} catch (err) {\n  const msg = (err.stdout || '') + (err.stderr || '') + (err.message || '');\n  throw new Error('Render failed for ' + mpId + ': ' + msg.substring(0, 2000));\n}"
       },
       "id": "8dd9ff8b-10e1-4218-96ca-a21945e9c29f",
       "name": "Execute Command: Build & Render",
