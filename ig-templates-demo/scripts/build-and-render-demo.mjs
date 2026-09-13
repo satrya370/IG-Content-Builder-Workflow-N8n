@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer';
@@ -90,11 +90,7 @@ for (const slide of plan.slides) {
 
     html = html.replace(/\{\{[A-Z0-9_]+\}\}/g, '');
 
-    const tmpPath = outDir + '_tmp_' + slide.id + '.html';
-    writeFileSync(tmpPath, html, 'utf8');
-
-    const fileUrl = 'file:///' + tmpPath.replace(/\\/g, '/');
-    await page.goto(fileUrl, { waitUntil: 'networkidle0', timeout: 20000 });
+    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 20000 });
     await page.evaluateHandle('document.fonts.ready');
     await new Promise(r => setTimeout(r, 300));
 
@@ -104,8 +100,6 @@ for (const slide of plan.slides) {
       path: pngOut,
       clip: { x: 0, y: 0, width: 1080, height: 1350 },
     });
-
-    unlinkSync(tmpPath);
 
     pngPaths.push(pngOut);
     successfulSlides++;
