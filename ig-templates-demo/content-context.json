@@ -1,0 +1,521 @@
+{
+  "description": "Editorial and template selection guide for a public demo content builder. This file defines topic-agnostic research scope, quality standards, source rules, and template requirements for safe, useful, evidence-led content.",
+
+  "language_and_voice": {
+    "note": "The actual per-run language switch lives in the form (English/Indonesia/Auto) and is enforced directly inside the Build AI Planner Body and Build Caption Body prompts - this section documents the fluency standard both must follow, it is not machine-read.",
+    "default": "English",
+    "supported": ["English", "Indonesia"],
+    "english": "Clear, confident, editorial English. Avoid textbook stiffness - write like a sharp newsletter writer, not a Wikipedia summary. Prefer concrete verbs over hedging (\"cuts\", \"forces\", \"breaks\") and short, punchy sentences over long compound ones.",
+    "indonesian": "Bahasa Indonesia yang benar-benar fasih dan mengalir - ditulis seperti penutur asli/copywriter Indonesia yang piawai, BUKAN hasil terjemahan kata-per-kata dari draf Inggris. Gunakan diksi sehari-hari yang natural (bukan bahasa baku-kaku ala buku pelajaran), struktur kalimat pendek dan tegas, dan pertahankan gaya 'hook tajam, bukan deskripsi topik' yang sama seperti versi Inggrisnya. Istilah teknis, nama produk/brand/tool (contoh: 'API', 'GitHub', 'machine learning') boleh tetap dalam bahasa aslinya jika memang begitu cara pembaca Indonesia biasa menemuinya - jangan dipaksakan diterjemahkan sampai terasa aneh.",
+    "cross_language_consistency": "Whichever language is chosen for a run, the editorial standards elsewhere in this file (quality_gate, source_policy, Hook & Title sharpness) apply identically - language choice changes the words, never the rigor."
+  },
+
+  "editorial_scope": {
+    "audience": "A broad public audience interested in clear, practical, evidence-led content. Adapt vocabulary, examples, and depth to the audience inferred for each safe topic.",
+    "mission": "Turn safe public topics into useful decisions, explanations, and practical next steps. Every carousel should help its intended audience understand, choose, try, avoid, or evaluate something better.",
+    "freshness_and_trends": {
+      "recent_signal_window": "Prioritize the last 7 days for releases, repository momentum, product updates, and active technical discussion. Expand to 30 days only when the angle is still actionable.",
+      "evergreen_rule": "Evergreen content is allowed only when it solves a real audience problem or is newly relevant because of a credible update, benchmark, case study, or community discussion.",
+      "trending_signals": [
+        "A primary source, credible release, case study, benchmark, or respected community discussion provides a meaningful signal.",
+        "The topic is discussed by relevant communities or several credible publications with enough substance to support a useful angle.",
+        "An official release, documentation update, benchmark, demo, or maintainer announcement provides a verifiable primary source.",
+        "At least one concrete workflow implication can be stated for the target audience."
+      ]
+    },
+    "source_policy": {
+      "primary_sources": [
+        "Official product documentation, changelogs, release notes, engineering blogs, GitHub repositories, READMEs, issue trackers, and papers",
+        "Trusted independent benchmarks, established technical publications, and respected practitioner write-ups"
+      ],
+      "community_sources": "Hacker News, X, Reddit, Discord, and community discussions may identify trends or sentiment, but cannot be the sole support for a factual claim.",
+      "experimental_repositories": "Small or experimental repositories are allowed when they have a credible maintainer, clear code or documentation, and a real trending or praise signal. Label their maturity and limitations honestly; never present an experimental project as production-ready."
+    },
+    "quality_gate": {
+      "required": [
+        "A specific thesis, not a broad subject such as 'AI trends' or 'best AI tools'.",
+        "At least one non-obvious insight, trade-off, failure mode, or decision framework.",
+        "Concrete examples, technical facts, or numbers when supported by research.",
+        "Five distinct slides that build a coherent argument rather than repeat the same point.",
+        "A practical reader outcome: what to try, choose, build, avoid, or evaluate next."
+      ],
+      "reject": [
+        "Generic listicles such as '5 AI tools you need' without a strong filtering thesis.",
+        "News recaps that do not explain a productivity or technical implication.",
+        "Generic advice without a specific audience, evidence, or practical outcome.",
+        "Unverified viral claims, fabricated benchmarks, or source-poor hot takes.",
+        "Topics that cannot support five genuinely different and useful slides."
+      ]
+    },
+    "memory": {
+      "record_fields": ["date", "primary_subject", "pillar", "template", "thesis", "keywords", "sources"],
+      "novelty_rule": "A subject may return after 14 days only with a clearly different thesis. It may return earlier only for a material update or a new angle with new evidence."
+    }
+  },
+
+  "templates": {
+
+    "code-content": {
+      "display_name": "Code Content",
+      "theme": "Editorial light — warm paper background with amber/teal accents",
+      "category": "Technical Breakdown",
+      "purpose": "Template for technical breakdowns, open-source alternatives, codebase pattern analysis, or product teardowns that are best delivered through strong editorial typography rather than screenshots. The emphasis is the argument, hierarchy, and takeaway density — not literal code blocks.",
+
+      "fits_when": [
+        "Breaking down one technical idea into 5 clear editorial slides",
+        "Open-source alternatives, repo breakdowns, and tool comparisons",
+        "Patterns found in a codebase, architecture, or developer workflow",
+        "Technical concepts where the insight matters more than showing raw syntax",
+        "Developer commentary, teardowns, or product-level analysis with a strong thesis",
+        "Topics that benefit from a premium, text-led carousel rather than screenshots"
+      ],
+
+      "does_not_fit": [
+        "Generic productivity or life advice with no technical angle",
+        "Broad data listicles that fit tips-content better",
+        "News or industry event content",
+        "Topics that depend on screenshots, product UIs, or diagrams — use visual-content"
+      ],
+
+      "slides": {
+        "intro": {
+          "file": "code-content-intro.html",
+          "placeholders": {
+            "TITLE":      "Main title — bold editorial headline. Up to 2-3 lines.",
+            "SUBTITLE":   "Supporting hook or context line. Can be longer than one sentence if needed.",
+            "TAG":        "Short technical category or angle — e.g. OPEN SOURCE, REACT, DEV TOOLS",
+            "KEYWORD_1":  "One short keyword/term (1-3 words) directly relevant to the topic — a tool, library, protocol, or key concept. Not a statistic.",
+            "KEYWORD_2":  "One short keyword/term (1-3 words) directly relevant to the topic — distinct from KEYWORD_1.",
+            "KEYWORD_3":  "One short keyword/term (1-3 words) directly relevant to the topic — distinct from KEYWORD_1/KEYWORD_2.",
+            "KEYWORD_4":  "One short keyword/term (1-3 words) directly relevant to the topic — distinct from the other three.",
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Light mode intro. The 4-term grid replaces the former logo-image grid — no image research or IMAGE_*_URL fields are needed for this template anymore."
+        },
+        "isi": {
+          "file": "code-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM":    "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "SLIDE_LABEL": "Short label for the angle — e.g. REPO 01, PATTERN 02, API SHIFT, STACK MOVE",
+            "SUBTITLE":    "Main point for this slide — strong editorial headline",
+            "EXPLANATION": "Detailed explanation — supports up to 2 short paragraphs. Max 300 chars total. Use a blank line between paragraphs if needed.",
+            "ANGLE_LABEL": "Short editorial micro-label for the bottom summary card — e.g. SAVE THIS SHIFT, KEY TAKEAWAY, WHY IT MATTERS",
+            "ANGLE_NOTE":  "One sharp sentence that captures the reusable angle or insight from this slide. Must match the slide's actual argument, not generic filler.",
+            "TOTAL":       "Total content slides — always 05",
+            "AVATAR_URL":  "Creator profile picture URL",
+            "HANDLE":      "Creator's Instagram username"
+          },
+          "visual_note": "Light mode content slide. No large step number rendered. STEP_NUM and TAG are still required in data{} for internal consistency but the large background number and the step indicator in the bottom bar are removed. The bottom summary card must use ANGLE_LABEL and ANGLE_NOTE to reinforce the slide-specific takeaway."
+        },
+        "closing": {
+          "file": "code-content-closing.html",
+          "placeholders": {
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Hardcoded follow closing identical to tips-content-closing.html."
+        }
+      }
+    },
+
+    "tips-content": {
+      "display_name": "Tips Content",
+      "theme": "Dark editorial — navy background, blue #49a4ff accent",
+      "category": "Tips & Data-Driven Insight",
+      "purpose": "Template for listicle or tips content grounded in data, research, or facts. One topic broken into 5 standalone points. No image needed — visual strength comes from large typography and the anchor hook word.",
+
+      "fits_when": [
+        "Actionable tips that can be broken into 5 steps or facts",
+        "Interesting data or statistics about tech and AI",
+        "Tool or approach comparisons with concrete numbers",
+        "Insights from industry research or surveys",
+        "Common misconceptions in tech — debunking myths",
+        "Career advice grounded in data, not opinion"
+      ],
+
+      "does_not_fit": [
+        "Content that requires displaying code",
+        "Breaking news or topics that need an image",
+        "Content that cannot be logically split into 5 points"
+      ],
+
+      "slides": {
+        "intro": {
+          "file": "tips-content-intro.html",
+          "placeholders": {
+            "HOOK":       "One big anchor word — short, powerful, ALL CAPS. e.g. FOCUS, BUILD, SHIP, SLEEP, CODE",
+            "TITLE":      "Main sentence explaining the hook — max 1 line, bold statement",
+            "SUBTITLE":   "Context or data source — 1 short sentence",
+            "TAG":        "Content category — e.g. Productivity, AI Tools, Career, Data",
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Dark mode intro. Background matches visual-content (navy gradient + grain + vignette). Hook word is off-white serif. Accent bar and topic tag use blue #49a4ff. No slide count visual."
+        },
+        "isi": {
+          "file": "tips-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM":    "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "TAG":         "Point label — e.g. Fact, Data, Tip, Action, Science. Can vary per slide.",
+            "SUBTITLE":    "Point title — short, impactful sentence, max 1 line",
+            "EXPLANATION": "Detailed explanation — 1-2 substantive sentences, may include numbers or data. Max 300 chars.",
+            "TOTAL":       "Total content slides — always 05",
+            "AVATAR_URL":  "Creator profile picture URL",
+            "HANDLE":      "Creator's Instagram username"
+          }
+        },
+        "closing": {
+          "file": "tips-content-closing.html",
+          "placeholders": {
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Static follow & like CTA slide. Dark mode. Displays 'FOLLOW.' as a large hook word with blue accent bar. Sub-text is static: 'Like & save if this was helpful.' and 'More data-backed content every week.' No slide number visual."
+        }
+      }
+    },
+
+    "template1-content": {
+      "display_name": "Template1 Content",
+      "theme": "Editorial white — coral #ff4c55 accent and abstract organic pattern",
+      "category": "Tips & Data-Driven Insight",
+      "purpose": "A light editorial carousel using the Template1 intro composition, with the same five-point text structure as tips-content and a distinct white/coral visual system.",
+      "fits_when": [
+        "Tips, facts, or practical insights that can be broken into five points",
+        "Public-facing explainers where a lighter editorial treatment improves readability",
+        "Topics that need a strong headline and concise evidence-led slide copy"
+      ],
+      "does_not_fit": [
+        "Content requiring code blocks, screenshots, or mandatory imagery",
+        "Topics that cannot support five distinct and useful points"
+      ],
+      "slides": {
+        "intro": {
+          "file": "template1-content-intro.html",
+          "placeholders": {
+            "TAG": "Short uppercase topic label shown above the headline",
+            "TITLE": "Main headline — specific, sharp, and readable in 2-3 lines"
+          },
+          "visual_note": "Preserves Template1's youami brand mark, PERSONAL ACCOUNT label, large headline, slide count, muted hashtag, and coral organic accent pattern on white."
+        },
+        "isi": {
+          "file": "template1-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM": "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "TAG": "Point label — e.g. Fact, Data, Tip, Action, Science",
+            "SUBTITLE": "Point title — short, impactful sentence",
+            "EXPLANATION": "Detailed explanation — 1-2 substantive sentences, max 300 characters",
+            "TOTAL": "Total content slides — always 05"
+          },
+          "visual_note": "Uses the tips-content information hierarchy but replaces the dark canvas with Template1's white paper, black editorial type, coral rule, and organic lower-right accent pattern."
+        },
+        "closing": {
+          "file": "template1-content-closing.html",
+          "placeholders": {},
+          "visual_note": "Template1 white/coral follow CTA with the same closing role as tips-content."
+        }
+      }
+    },
+
+    "insight-content": {
+      "display_name": "Insight Content",
+      "theme": "Editorial dark — warm amber #e3a530 accent, quote-card composition",
+      "category": "Insight & Opinion",
+      "purpose": "Template for a sharp, sourced insight, claim, or reframe per slide, delivered as an editorial quote card. No image research is needed, making it safe and reliable for any public topic.",
+
+      "fits_when": [
+        "A specific claim, insight, or reframe can be stated for each of the 5 slides",
+        "The topic does not need a screenshot, diagram, or code to be understood",
+        "Topics outside tech/coding — health, finance, habits, culture, science — that are still evidence-led",
+        "Content that benefits from a strong, quotable one-line statement per slide"
+      ],
+
+      "does_not_fit": [
+        "Content that requires displaying code — use code-content",
+        "Content that depends on a screenshot, UI, or diagram — use visual-content",
+        "Simple listicle-style tips better served by tips-content's step format"
+      ],
+
+      "slides": {
+        "intro": {
+          "file": "insight-content-intro.html",
+          "placeholders": {
+            "HOOK":       "One big anchor word — short, powerful, ALL CAPS.",
+            "TITLE":      "Main sentence explaining the hook — max 1 line, bold statement",
+            "SUBTITLE":   "Context or data source — 1 short sentence",
+            "TAG":        "Content category — e.g. Health, Finance, Habits, Science",
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Reuses tips-content-intro's composition and placeholders, recolored to this template's amber accent."
+        },
+        "isi": {
+          "file": "insight-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM":   "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "QUOTE":      "The sharp insight or claim itself — lead with the fact/tension, not a topic label. Max 160 chars.",
+            "SUPPORT":    "One sentence of elaboration, reframe, or evidence supporting the QUOTE. Max 220 chars.",
+            "SOURCE":     "Short attribution — e.g. site name or 'per <source type>', not a full URL. Max 40 chars.",
+            "TOTAL":      "Total content slides — always 05",
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Quote-card layout with a giant faint quote-mark decorative background. AVATAR_URL is listed for schema consistency but not rendered in this slide type."
+        },
+        "closing": {
+          "file": "insight-content-closing.html",
+          "placeholders": {
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Same structure as tips-content-closing.html, recolored amber, tagline generalized to 'Fresh Insights Every Week'."
+        }
+      }
+    },
+
+    "editorial-content": {
+      "display_name": "Editorial Content",
+      "theme": "Editorial cream/white — gold #C9A227/#D4AF37 accent, Plus Jakarta Sans, soft thin-outline circular icon badges",
+      "category": "Insight & Opinion",
+      "purpose": "A premium, light-mode editorial carousel for topics that benefit from an elegant, magazine-like presentation rather than a dark or data-heavy treatment. Each content slide develops one point with a title and explanation, framed by a soft gold chapter-numeral watermark. No image research is needed.",
+
+      "fits_when": [
+        "Reflective, lifestyle, productivity, or premium-insight topics that suit a calm, elegant tone",
+        "A specific point or explanation can be developed for each of the 5 slides",
+        "The topic does not need a screenshot, diagram, or code to be understood",
+        "Content that benefits from a light, airy, high-end aesthetic instead of dark or bold treatments"
+      ],
+
+      "does_not_fit": [
+        "Content that requires displaying code — use code-content",
+        "Content that depends on a screenshot, UI, or diagram — use visual-content",
+        "Topics that call for a bold, dark, high-contrast tone — use insight-content or tips-content instead"
+      ],
+
+      "slides": {
+        "intro": {
+          "file": "editorial-content-intro.html",
+          "placeholders": {
+            "TAG":      "Short uppercase category label — e.g. PRODUCTIVITY, MINDSET, LIFESTYLE",
+            "TITLE":    "Main editorial headline — bold statement, up to 2-3 lines",
+            "SUBTITLE": "Supporting description — 1-2 sentences giving context for the topic",
+            "TAGLINE":  "Short footer tagline, may include '<span class=\"dot\">•</span>' separators between 2-3 short words, e.g. 'Focused <span class=\"dot\">•</span> Practical <span class=\"dot\">•</span> Evidence-based'",
+            "HANDLE":   "Creator's Instagram username"
+          },
+          "visual_note": "Light cream/white gradient background, soft thin-outline circular document icon badge, gold accent typography, corner radial-gradient decorative blobs."
+        },
+        "isi": {
+          "file": "editorial-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM":    "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "TOTAL":       "Total content slides — always 05",
+            "TAG":         "Short uppercase point label — e.g. KEY INSIGHT, PRINCIPLE, IDEA",
+            "TITLE":       "Point title — short, impactful editorial headline",
+            "EXPLANATION": "Detailed explanation of this point — 1-2 substantive sentences. Max 300 chars.",
+            "HANDLE":      "Creator's Instagram username"
+          },
+          "visual_note": "Large soft-stroke ghost numeral of STEP_NUM as a top-right watermark, soft icon badge, gold 'Point N of TOTAL' chapter rule separating header from footer."
+        },
+        "closing": {
+          "file": "editorial-content-closing.html",
+          "placeholders": {
+            "HANDLE": "Creator's Instagram username"
+          },
+          "visual_note": "Distinct layout from the intro (smaller eyebrow header, short 2-line title, gold checkmark CTA list, italic thank-you line) — deliberately not a re-use of the intro's big-header composition."
+        }
+      }
+    },
+
+    "momentum-content": {
+      "display_name": "Momentum Content",
+      "theme": "Dark grain editorial — near-black background, neon green #39ff6a accent, bold condensed caps headline (Anton) + cursive accent word (Caveat), circular progress-ring motif",
+      "category": "Tips & Growth Insight",
+      "purpose": "A high-energy, growth/hook-style carousel for actionable steps or momentum-building advice. Each content slide develops one step with a title and explanation, marked by a segmented progress-ring indicator instead of plain text pagination. No image research is needed.",
+
+      "fits_when": [
+        "Actionable steps, growth tactics, or momentum-building advice that can be split into 5 points",
+        "Topics that benefit from an energetic, urgent, hook-driven tone rather than a calm editorial one",
+        "A specific step or explanation can be developed for each of the 5 slides",
+        "The topic does not need a screenshot, diagram, or code to be understood"
+      ],
+
+      "does_not_fit": [
+        "Content that requires displaying code — use code-content",
+        "Content that depends on a screenshot, UI, or diagram — use visual-content",
+        "Calm, premium, reflective topics — use editorial-content or insight-content instead"
+      ],
+
+      "slides": {
+        "intro": {
+          "file": "momentum-content-intro.html",
+          "placeholders": {
+            "TAG":          "Short uppercase kicker line above the title — e.g. HOW TO GROW FASTER, THE ONE MISTAKE",
+            "TITLE":        "Main bold headline — up to 2 lines, ALL CAPS rendering is automatic via CSS",
+            "ACCENT_WORD":  "Short closing phrase rendered in green script font, continuing the title's sentence — e.g. 'on Instagram', 'this week'",
+            "AVATAR_URL":   "Creator profile picture URL",
+            "HANDLE":       "Creator's Instagram username"
+          },
+          "visual_note": "Black grain background, neon green progress-ring (decorative, static) top-right, bold Anton headline wraps to 2 lines, Caveat script accent line, footer has avatar+handle and a static 'Save this so you don't lose it' bookmark CTA."
+        },
+        "isi": {
+          "file": "momentum-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM":    "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "TOTAL":       "Total content slides — always 05",
+            "TITLE":       "Step title — short, punchy bold headline",
+            "EXPLANATION": "Detailed explanation of this step — 1-2 substantive sentences. Max 300 chars.",
+            "AVATAR_URL":  "Creator profile picture URL",
+            "HANDLE":      "Creator's Instagram username"
+          },
+          "visual_note": "Progress-ring fills proportionally via a `ring-{{STEP_NUM}}` CSS class (same pattern as insight-content-isi's pagination classes) instead of a plain step number. Green 'Step N' kicker, bold Anton title, gray explanation paragraph, footer pager shows 'N / TOTAL' with a small arrow icon."
+        },
+        "closing": {
+          "file": "momentum-content-closing.html",
+          "placeholders": {
+            "AVATAR_URL": "Creator profile picture URL",
+            "HANDLE":     "Creator's Instagram username"
+          },
+          "visual_note": "Deliberately distinct from the intro layout — centered composition, full progress-ring (100%), short 3-line bold statement, green script 'Follow for more' CTA line, static subtext, footer avatar+handle+'7/7'."
+        }
+      }
+    },
+
+    "visual-content": {
+      "display_name": "Visual Content",
+      "theme": "Dark navy — purple #a855f7 accent, 3D rendered visuals",
+      "category": "Visual Tutorial, Tips & Tool Showcase",
+      "purpose": "Template for tutorials, tips, or facts that require a visual illustration — screenshots, app UIs, diagrams, or tool interfaces. The intro and closing use AI-generated 3D render images. Each content slide shows one item with a title, explanation, and a bordered screenshot or visual.",
+
+      "fits_when": [
+        "Showcasing tools, apps, or software with a visual interface",
+        "Step-by-step tutorials where each step benefits from a screenshot or diagram",
+        "Free or open-source tool roundups where the UI is part of the value",
+        "Tips or facts that are best understood visually rather than in pure text",
+        "Comparisons or demonstrations where seeing the interface matters"
+      ],
+
+      "does_not_fit": [
+        "Pure code walkthroughs without a visual UI — use code-content instead",
+        "Text-only tips or listicles with no visual to show — use tips-content instead",
+        "Breaking news — use news-content instead"
+      ],
+
+      "slides": {
+        "intro": {
+          "file": "visual-content-intro.html",
+          "placeholders": {
+            "TITLE_LINE1":   "Opening segment of one editorial headline, max 18 characters. It renders together with TITLE_LINE2 as a single natural, left-aligned title block.",
+            "TITLE_LINE2":   "Continuation of the same headline, max 22 characters. Do not force a separate balanced line or use generic lens labels.",
+            "ACCENT_LINE":   "Purple qualifier that adds a specific practical angle, trade-off, or useful stat. Max 44 chars.",
+            "SUBTITLE":      "Short supporting sentence aligned to the same left column as the title. Max 120 chars.",
+            "IMAGE_3D_URL":  "AI-generated 3D render image URL — see image_3d_requirement below",
+            "TAG":           "Top-right label — tool name, brand, or category. e.g. 'n8n', 'AI TOOLS', 'GITHUB'",
+            "AVATAR_URL":    "Creator profile picture URL",
+            "HANDLE":        "Creator's Instagram username"
+          }
+        },
+        "isi": {
+          "file": "visual-content-isi.html",
+          "count": 5,
+          "placeholders": {
+            "STEP_NUM":       "Content slide number — 2-digit format: 01, 02, 03, 04, 05",
+            "TITLE":          "Item name or step title — short, punchy. e.g. 'yt-dlp', 'Step 1: Setup', 'n8n'. Max 42 chars.",
+            "EXPLANATION_L1": "First paragraph of explanation — one substantive paragraph with a specific fact, mechanism, or implication. Max 300 chars.",
+            "EXPLANATION_L2": "Second paragraph of explanation — a substantive continuation, trade-off, or practical consequence. Max 300 chars.",
+            "IMAGE_URL":      "Screenshot or visual of the tool/concept being discussed — see image_requirement below",
+            "TOTAL":          "Total content slides — always 05",
+            "AVATAR_URL":     "Creator profile picture URL",
+            "HANDLE":         "Creator's Instagram username"
+          }
+        },
+        "closing": {
+          "file": "visual-content-closing.html",
+          "placeholders": {
+            "AVATAR_URL":    "Creator profile picture URL",
+            "HANDLE":        "Creator's Instagram username"
+          },
+          "visual_note": "Static CTA slide with centered typography. No image is required. Only AVATAR_URL and HANDLE are dynamic."
+        }
+      },
+
+      "image_plan_guidance": {
+        "description": "Structured image intent for the Build AI Brief Body prompt.",
+        "intro": "Intro image is a 3D render visual (IMAGE_3D_URL). Must use assetType=3d-render with a query describing the topic rendered as a 3D dark-theme visual.",
+        "slides": "Each isi slide requires a UI screenshot, official docs screenshot, or diagram matched to that specific slide topic (IMAGE_URL). Prefer official GitHub README images or product screenshots. Never use random Unsplash images for isi slides unless no official screenshot can be found."
+      },
+
+      "image_requirement": {
+        "description": "For content (isi) slides — find a real screenshot or visual of the tool/concept being shown.",
+        "mandatory": true,
+        "sources": [
+          "Direct screenshot URL from the tool's official GitHub README (raw image links)",
+          "Official product website screenshot or demo image",
+          "App Store / Play Store preview image if discussing a mobile app",
+          "Dashboard or UI screenshot from the tool's documentation"
+        ],
+        "criteria": [
+          "Must show the actual interface or visual of what is being discussed",
+          "Prefer dark-mode screenshots if available — they blend better with the dark template",
+          "Minimum 940px width",
+          "Avoid images with large text overlays — the content should be clearly readable"
+        ]
+      },
+
+      "image_3d_requirement": {
+        "description": "For intro slides — use an AI image generation tool to create a 3D render, OR find a high-quality 3D-style tech image.",
+        "mandatory": true,
+        "style": "Dark background (#08080f or very dark navy), photorealistic 3D rendered objects floating in space, purple/blue glowing light, connected by thin glowing lines. Objects should represent the topic (e.g. AI chips, app icons, robotic hands, floating UI cards).",
+        "generation_prompt_template": "3D render of [TOPIC_OBJECTS] on a dark navy background, glowing purple and blue neon light, floating connected by thin light trails, photorealistic, high detail, cinematic lighting, no text",
+        "fallback": "If image generation is unavailable, search Unsplash for: 'tech 3D render dark background purple glow' or 'AI chip holographic dark'"
+      }
+    }
+  },
+
+  "shared_defaults": {
+    "note": "The following fields are typically constant per creator — stored in a creator config profile, not generated each time.",
+    "AVATAR_URL": "Creator profile picture URL (constant)",
+    "HANDLE":     "Creator's Instagram username (constant)",
+    "TOTAL":      "Always 05 for all content slide templates"
+  },
+
+  "template_selection_logic": {
+    "description": "Use this guide to select the correct template before generating content.",
+    "decision": [
+      {
+        "if": "Content requires displaying code, syntax, or commands",
+        "use": "code-content"
+      },
+      {
+        "if": "Content is tips, facts, or insights that can be split into 5 points — no code, no mandatory image",
+        "use": "tips-content"
+      },
+      {
+        "if": "Content showcases tools, apps, CLI workflows, automations, or concepts that need screenshots, diagrams, or visual illustrations",
+        "use": "visual-content"
+      },
+      {
+        "if": "Content is a sharp insight, claim, or reframe that doesn't need code or a visual/screenshot — including non-tech topics such as health, finance, habits, or culture",
+        "use": "insight-content"
+      },
+      {
+        "if": "Content suits a calm, premium, editorial/lifestyle tone rather than a bold or dark treatment — no code or mandatory visual needed",
+        "use": "editorial-content"
+      },
+      {
+        "if": "Content is an energetic, urgent, hook-driven growth tip or step-by-step tactic — not a calm/premium tone",
+        "use": "momentum-content"
+      },
+      {
+        "if": "Content is triggered by a recent release, trend, model update, controversial benchmark, or industry discussion",
+        "use": "Select tips-content, code-content, or visual-content based on the useful angle. Never create a generic news recap."
+      }
+    ]
+  }
+}
