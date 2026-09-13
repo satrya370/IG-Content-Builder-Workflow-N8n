@@ -90,7 +90,7 @@ for (const slide of plan.slides) {
 
     html = html.replace(/\{\{[A-Z0-9_]+\}\}/g, '');
 
-    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 20000 });
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 20000 });
     await page.evaluateHandle('document.fonts.ready');
     await new Promise(r => setTimeout(r, 300));
 
